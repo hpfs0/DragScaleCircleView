@@ -13,7 +13,6 @@
 package com.rori.zenvo.dragscalecircleview;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -24,16 +23,15 @@ import android.util.AttributeSet;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
+import android.widget.ImageView;
 
 /*
  * Custom View that provides dragged and scaled.
  *
  * @author hpfs0
  */
-public class DragScaleCircleView extends SurfaceView implements SurfaceHolder.Callback, Runnable, View.OnTouchListener {
+public class DragScaleCircleView extends ImageView implements View.OnTouchListener {
 
     // The screen width.
     protected int mScreenWidth;
@@ -92,14 +90,6 @@ public class DragScaleCircleView extends SurfaceView implements SurfaceHolder.Ca
     // the circle view's border color.
     protected int mBorderColor;
 
-    private Thread mThread = null;
-
-    private SurfaceHolder mSurfaceHolder = null;
-
-    private Canvas mCanvas;
-
-    private boolean mFlag;
-
     // -------------------------------------------------------------
     //                            constructor
     // -------------------------------------------------------------
@@ -131,10 +121,18 @@ public class DragScaleCircleView extends SurfaceView implements SurfaceHolder.Ca
      * Initialization obtain the screen width and height.
      */
     protected void init(@NonNull Context context, @Nullable AttributeSet attrs) {
-        final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.DragScaleCircleView, 0, 0);
-        typedArray.recycle();
-        mSurfaceHolder = getHolder();
-        mSurfaceHolder.addCallback(this);
+        mScreenWidth = getResources().getDisplayMetrics().widthPixels;
+        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+        boolean hasHomeKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_HOME);
+        if (hasBackKey && hasHomeKey) {
+            mScreenHeight = getResources().getDisplayMetrics().heightPixels - 40 - 128;
+        } else {
+            mScreenHeight = getResources().getDisplayMetrics().heightPixels - 40;
+        }
+        mCenterPointX = mScreenWidth / 2;
+        mCenterPointY = mScreenHeight / 2;
+        mOffset = 20;
+        mRadius = (Math.min(mScreenWidth, mScreenHeight) - mOffset) / 2;
         mPaint.setAntiAlias(true);
         mPaint.setColor(Color.RED);
         mPaint.setStrokeWidth(4.0f);
@@ -150,50 +148,6 @@ public class DragScaleCircleView extends SurfaceView implements SurfaceHolder.Ca
         mGuideLinePaint.setStyle(Paint.Style.STROKE);
         mHandlePaint.setAntiAlias(true);
         mPaint.setStrokeWidth(2.0f);
-        mThread = new Thread(this);
-    }
-
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        mScreenWidth = getResources().getDisplayMetrics().widthPixels;
-        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
-        boolean hasHomeKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_HOME);
-        if (hasBackKey && hasHomeKey) {
-            mScreenHeight = getResources().getDisplayMetrics().heightPixels - 40 - 128;
-        } else {
-            mScreenHeight = getResources().getDisplayMetrics().heightPixels - 40;
-        }
-        mCenterPointX = mScreenWidth / 2;
-        mCenterPointY = mScreenHeight / 2;
-        mOffset = 20;
-        mRadius = (Math.min(mScreenWidth, mScreenHeight) - mOffset) / 2;
-        mFlag = true;
-        mThread.start();
-    }
-
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-        mFlag = false;
-        mSurfaceHolder.removeCallback(this);
-    }
-
-    @Override
-    public void run() {
-        while (mFlag) {
-            try {
-                synchronized (mSurfaceHolder) {
-                    Thread.sleep(100);
-                    drawView();
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -205,41 +159,12 @@ public class DragScaleCircleView extends SurfaceView implements SurfaceHolder.Ca
         mBorderColor = ContextCompat.getColor(context, R.color.border);
     }
 
-    protected void drawView() {
-        mCanvas = mSurfaceHolder.lockCanvas();
-        if(mCanvas != null){
-            mCanvas.drawColor(Color.WHITE);
-            mCanvas.drawCircle(mCenterPointX, mCenterPointY, mRadius, mPaint);
-            switch (mHandleMode) {
-                case HANDLE_DOWN:
-                    if (mDragDirection == SIDE) {
-                        drawHandles(mCanvas);
-                        drawGuideLine(mCanvas);
-                    } else if (mDragDirection == CENTER) {
-                        drawGuideLine(mCanvas);
-                    }
-                    break;
-                case HANDLE_MOVE:
-                    if (mDragDirection == SIDE) {
-                        drawHandles(mCanvas);
-                        drawGuideLine(mCanvas);
-                    } else if (mDragDirection == CENTER) {
-                        drawGuideLine(mCanvas);
-                    }
-                    break;
-                case HANDLE_UP:
-                    break;
-            }
-            mSurfaceHolder.unlockCanvasAndPost(mCanvas);
-        }
-    }
-
     /**
      * drawing the view.
      *
-     * @param
+     * @param canvas
      */
-    /*@Override
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         mPaint.setAntiAlias(true);
@@ -261,21 +186,26 @@ public class DragScaleCircleView extends SurfaceView implements SurfaceHolder.Ca
         canvas.drawCircle(mCenterPointX, mCenterPointY, mRadius, mPaint);
         switch (mHandleMode) {
             case HANDLE_DOWN:
-                if(mDragDirection == SIDE){
+                if (mDragDirection == SIDE) {
                     drawHandles(canvas);
+                    drawGuideLine(canvas);
+                } else if (mDragDirection == CENTER) {
+                    drawGuideLine(canvas);
                 }
-                drawGuideLine(canvas);
                 break;
             case HANDLE_MOVE:
-                if(mDragDirection == SIDE){
+                if (mDragDirection == SIDE) {
                     drawHandles(canvas);
+                    drawGuideLine(canvas);
+                } else if (mDragDirection == CENTER) {
+                    drawGuideLine(canvas);
                 }
-                drawGuideLine(canvas);
                 break;
             case HANDLE_UP:
                 break;
         }
-    }*/
+    }
+
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         int action = event.getAction();
