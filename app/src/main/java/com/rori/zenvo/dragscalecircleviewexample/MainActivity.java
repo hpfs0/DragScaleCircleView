@@ -7,9 +7,11 @@ import com.rori.zenvo.dragscalecircleview.DragScaleCircleView;
 
 public class MainActivity extends AppCompatActivity {
 
+    DragScaleCircleView view;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new DragScaleCircleView(this));
+        setContentView(R.layout.activity_main);
     }
 }

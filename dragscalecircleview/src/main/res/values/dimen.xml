@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="border_width">3dp</dimen>
+    <dimen name="guideline_width">1px</dimen>
+
+    <dimen name="corner_width">5dp</dimen>
+
+</resources>
