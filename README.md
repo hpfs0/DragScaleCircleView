@@ -10,9 +10,8 @@ Sometimes need to cut a picture into a circle.
 * impprove performence when the circle window move and drag.
 
 ## License
---------
 
-    Copyright 2015 Rey Pham.
+    Copyright 2015 hpfs0 inc.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
