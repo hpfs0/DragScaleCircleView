@@ -1,6 +1,9 @@
 # DragScaleCircleView
 a custom imageview that provides dragged and scaled
 
+## How does it look?
+![image](https://github.com/hpfs0/DragScaleCircleView/blob/master/show.gif)
+
 ## Why?
 Sometimes need to cut a picture into a circle.
 
