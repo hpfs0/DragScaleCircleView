@@ -26,6 +26,8 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.KeyCharacterMap;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -47,6 +49,12 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     // The drawable height.
     protected float mDrawableHeight;
+
+    // The screen width.
+    protected float mScreenWidth;
+
+    // The screen height.
+    protected float mScreenHeight;
 
     // The last point X.
     protected int mLastX;
@@ -145,6 +153,14 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
      */
     protected void init(@NonNull Context context, @Nullable AttributeSet attrs) {
         final Resources resources = context.getResources();
+        mScreenWidth = resources.getDisplayMetrics().widthPixels;
+        boolean hasBackKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_BACK);
+        boolean hasHomeKey = KeyCharacterMap.deviceHasKey(KeyEvent.KEYCODE_HOME);
+        if (hasBackKey && hasHomeKey) {
+            mScreenHeight = getResources().getDisplayMetrics().heightPixels - 40 - 128;
+        } else {
+            mScreenHeight = getResources().getDisplayMetrics().heightPixels - 40;
+        }
         mBoarderPaint = PaintUtil.newBoarderPaint(resources);
         mSurroundingAreaOverlayPaint = PaintUtil.newSurroundingAreaOverlayPaint(resources);
         mHandlePaint = PaintUtil.newHandlerPaint(resources);
@@ -390,13 +406,13 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
         if (mCenterPointX + dx - mRadius < 0) {
             return;
         }
-        if (mDrawableWidth - (mCenterPointX + dx + mRadius) < 0) {
+        if (Math.min(mDrawableWidth, mScreenWidth) - (mCenterPointX + dx + mRadius) < 0) {
             return;
         }
         if (mCenterPointY + dy - mRadius < 0) {
             return;
         }
-        if (mDrawableHeight - (mCenterPointY + dy + mRadius) < 0) {
+        if (Math.min(mDrawableHeight, mScreenHeight) - (mCenterPointY + dy + mRadius) < 0) {
             return;
         }
         mCenterPointX += dx;
@@ -419,31 +435,31 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
         float maxRadius = Math.min(Math.min(mCenterPointX, mDrawableWidth - mCenterPointX), Math.min(mCenterPointY, mDrawableHeight - mCenterPointY));
         if (rawDistance <= maxRadius && rawDistance >= 30) {
             if (mRadius < maxRadius && mRadius > 30) {
-                mRadius = (int) rawDistance;
+                mRadius = (float) rawDistance;
             } else if (mRadius == maxRadius) {
                 // only scale in can be done
                 if (lastX > mCenterPointX && lastY < mCenterPointY) {
                     // touch point at top right
                     if (rawX < lastX || rawY > lastY) {
-                        mRadius = (int) rawDistance;
+                        mRadius = (float) rawDistance;
                     }
                 }
                 if (lastX > mCenterPointX && lastY > mCenterPointY) {
                     // touch point at bottom right
                     if (rawX < lastX || rawY < lastY) {
-                        mRadius = (int) rawDistance;
+                        mRadius = (float) rawDistance;
                     }
                 }
                 if (lastX < mCenterPointX && lastY < mCenterPointY) {
                     // touch point at top left
                     if (rawX > lastX || rawY > lastY) {
-                        mRadius = (int) rawDistance;
+                        mRadius = (float) rawDistance;
                     }
                 }
                 if (lastX < mCenterPointX && lastY > mCenterPointY) {
                     // touch point at bottom left
                     if (rawX > lastX || rawY < lastY) {
-                        mRadius = (int) rawDistance;
+                        mRadius = (float) rawDistance;
                     }
                 }
             } else if (mRadius == 30) {
@@ -451,25 +467,25 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
                 if (lastX > mCenterPointX && lastY < mCenterPointY) {
                     // touch point at top right
                     if (rawX > lastX || rawY < lastY) {
-                        mRadius = (int) rawDistance;
+                        mRadius = (float) rawDistance;
                     }
                 }
                 if (lastX > mCenterPointX && lastY > mCenterPointY) {
                     // touch point at bottom right
                     if (rawX > lastX || rawY > lastY) {
-                        mRadius = (int) rawDistance;
+                        mRadius = (float) rawDistance;
                     }
                 }
                 if (lastX < mCenterPointX && lastY < mCenterPointY) {
                     // touch point at top left
                     if (rawX < lastX || rawY < lastY) {
-                        mRadius = (int) rawDistance;
+                        mRadius = (float) rawDistance;
                     }
                 }
                 if (lastX < mCenterPointX && lastY > mCenterPointY) {
                     // touch point at bottom left
                     if (rawX < lastX || rawY > lastY) {
-                        mRadius = (int) rawDistance;
+                        mRadius = (float) rawDistance;
                     }
                 }
             }
