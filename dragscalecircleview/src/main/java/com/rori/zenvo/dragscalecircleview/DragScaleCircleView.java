@@ -14,9 +14,13 @@ package com.rori.zenvo.dragscalecircleview;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -99,8 +103,12 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     // Handle mode.
     private int mHandleMode;
 
-    // The circle view's border color.
-    protected int mBorderColor;
+    // The bitmap used to make surrounding area.
+    private Bitmap mBitmap;
+
+    // The canvas used to load bitmap.
+    private Canvas mCanvas;
+
 
     // -------------------------------------------------------------
     //                            constructor
@@ -154,8 +162,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-
-        drawDarkeSurroundingArea(canvas);
+        drawDarkenSurroundingArea(canvas);
         drawCircleBorder(canvas);
         switch (mHandleMode) {
             case HANDLE_DOWN:
@@ -203,6 +210,10 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
         this.mHandleMode = mode;
     }
 
+    /**
+     * Draw a corner on the crop circle window.
+     * @param canvas canvas
+     */
     private void drawHandles(Canvas canvas) {
         canvas.drawCircle(mCenterPointX - mRadius, mCenterPointY, mHandleRadius, mHandlePaint);
         canvas.drawCircle(mCenterPointX, mCenterPointY + mRadius, mHandleRadius, mHandlePaint);
@@ -210,71 +221,62 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
         canvas.drawCircle(mCenterPointX + mRadius, mCenterPointY, mHandleRadius, mHandlePaint);
     }
 
+    /**
+     * Draw crop circle window.
+     * @param canvas
+     */
     private void drawCircleBorder(@NonNull Canvas canvas) {
         canvas.drawCircle(mCenterPointX, mCenterPointY, mRadius, mBoarderPaint);
     }
 
-    private void drawDarkeSurroundingArea(@NonNull Canvas canvas) {
+    /**
+     * Draw the darken surrounding area on canvas.
+     * @param canvas
+     */
+    private void drawDarkenSurroundingArea(@NonNull Canvas canvas) {
 
-        final RectF bitmapRect = mBitmapRect;
-
-        final float left = mCenterPointX - bitmapRect.left - mRadius;
-        final float top = mCenterPointY - mRadius;
-        final float right = mCenterPointX - bitmapRect.left + mRadius;
-        final float bottom = mCenterPointY + mRadius;
-
-        /*-
-          -------------------------------------
-          |                top                |
-          -------------------------------------
-          |      |                    |       |
-          |      |                    |       |
-          | left |                    | right |
-          |      |                    |       |
-          |      |                    |       |
-          -------------------------------------
-          |              bottom               |
-          -------------------------------------
-         */
-
-        // Draw "top", "bottom", "left", then "right" quadrants according to diagram above.
-        canvas.drawRect(bitmapRect.left, bitmapRect.top, bitmapRect.right, top, mSurroundingAreaOverlayPaint);
-        canvas.drawRect(bitmapRect.left, bottom, bitmapRect.right, bitmapRect.bottom, mSurroundingAreaOverlayPaint);
-        canvas.drawRect(bitmapRect.left, top, left, bottom, mSurroundingAreaOverlayPaint);
-        canvas.drawRect(right, top, bitmapRect.right, bottom, mSurroundingAreaOverlayPaint);
+        mBitmap = Bitmap.createBitmap(canvas.getWidth(), canvas.getHeight(), Bitmap.Config.ARGB_8888);
+        mBitmap.eraseColor(Color.TRANSPARENT);
+        mCanvas = new Canvas(mBitmap);
+        mCanvas.drawColor(getResources().getColor(R.color.surrouding_area));
+        mCanvas.drawCircle(mCenterPointX, mCenterPointY, mRadius, mSurroundingAreaOverlayPaint);
+        canvas.drawBitmap(mBitmap, 0, 0, null);
     }
 
+    /**
+     * Draw a guideline on canvas
+     * @param canvas canvas
+     */
     private void drawGuideLine(Canvas canvas) {
         float offset = (float) Math.sqrt(Math.pow(mRadius, 2) / 2);
         // top left
-        float tlpointX = mCenterPointX - offset;
-        float tlpointY = mCenterPointY - offset;
+        float topLeftPointX = mCenterPointX - offset;
+        float topLeftpointY = mCenterPointY - offset;
 
         // top right
-        float trpointX = mCenterPointX + offset;
-        float trpointY = tlpointY;
+        float topRightPointX = mCenterPointX + offset;
+        float topRightPpointY = topLeftpointY;
 
         // bottom left
-        float blpointX = tlpointX;
-        float blpointY = mCenterPointY + offset;
+        float bottomLeftPointX = topLeftPointX;
+        float bottomLeftpointY = mCenterPointY + offset;
 
         // bottom right
-        float brpointX = trpointX;
-        float brpointY = blpointY;
+        float bottomRightPointX = topRightPointX;
+        float bottomRightPointY = bottomLeftpointY;
 
-        canvas.drawLine(tlpointX, tlpointY, trpointX, trpointY, mGuideLinePaint);
+        canvas.drawLine(topLeftPointX, topLeftpointY, topRightPointX, topRightPpointY, mGuideLinePaint);
         canvas.drawLine(mCenterPointX - mRadius, mCenterPointY, mCenterPointX + mRadius, mCenterPointY, mGuideLinePaint);
-        canvas.drawLine(blpointX, blpointY, brpointX, brpointY, mGuideLinePaint);
+        canvas.drawLine(bottomLeftPointX, bottomLeftpointY, bottomRightPointX, bottomRightPointY, mGuideLinePaint);
 
-        canvas.drawLine(tlpointX, tlpointY, blpointX, blpointY, mGuideLinePaint);
+        canvas.drawLine(topLeftPointX, topLeftpointY, bottomLeftPointX, bottomLeftpointY, mGuideLinePaint);
         canvas.drawLine(mCenterPointX, mCenterPointY - mRadius, mCenterPointX, mCenterPointY + mRadius, mGuideLinePaint);
-        canvas.drawLine(trpointX, trpointY, brpointX, brpointY, mGuideLinePaint);
+        canvas.drawLine(topRightPointX, topRightPpointY, bottomRightPointX, bottomRightPointY, mGuideLinePaint);
 
     }
 
     /**
-     * get the drag direction side or center
-     *
+     * Get the drag direction side or center
      * @param v the circle view
      * @param x the touch point X
      * @param y the touch point Y
@@ -293,8 +295,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     }
 
     /**
-     * drag the circle view.
-     *
+     * Drag the circle view.
      * @param v      the circle view
      * @param event  event
      * @param action action

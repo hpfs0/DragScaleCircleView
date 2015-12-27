@@ -14,6 +14,8 @@ package com.rori.zenvo.util;
 
 import android.content.res.Resources;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.support.annotation.NonNull;
 
 import com.rori.zenvo.dragscalecircleview.R;
@@ -44,8 +46,8 @@ public class PaintUtil {
     public static Paint newSurroundingAreaOverlayPaint(@NonNull Resources resources) {
 
         final Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        paint.setColor(resources.getColor(R.color.surrouding_area));
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        paint.setAntiAlias(true);
 
         return paint;
     }

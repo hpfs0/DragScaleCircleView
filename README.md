@@ -5,9 +5,11 @@ a custom imageview that provides dragged and scaled
 Sometimes need to cut a picture into a circle.
 
 ## TODO
-* make the circle window move and drag on imageview.
+* ~~make the circle window move and drag on imageview.~~
 * crop the circle window from imageview.
-* impprove performence when the circle window move and drag.
+* fix move the circle window right edge bug.
+* add rect window option.
+* ~~impprove performence when the circle window move and drag.~~
 
 ## License
 
