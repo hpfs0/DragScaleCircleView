@@ -1,1 +1,1 @@
-include ':app', ':dragscalecircleview'
+include ':dragscalecircleviewExample', ':dragscalecircleview'
