@@ -7,6 +7,22 @@ a custom imageview that provides dragged and scaled
 ## Why?
 Sometimes need to cut a picture into a circle.
 
+## Usage
+To add the DragScaleCircleView to your application, specify com.edmodo.cropper.CropImageView in your layout XML.
+
+```xml
+    <com.rori.zenvo.dragscalecircleview.DragScaleCircleView
+        android:id="@+id/dragScaleCircleView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:clickable="true"
+        android:src="@drawable/img1"/>
+```
+
+## Download
+The latest version can be downloaded as a zip and referenced by your application as a library project.
+
 ## TODO
 * ~~make the circle window move and drag on imageview.~~
 * crop the circle window from imageview.
