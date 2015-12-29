@@ -7,7 +7,7 @@ a custom imageview that provides dragged and scaled
 ## Why?
 Sometimes need to cut a picture into a circle.
 
-## Dependency
+## Install
 The lib is published on Jcenter:
 
 ```java
@@ -41,7 +41,7 @@ The latest version can be downloaded as a zip and referenced by your application
 
 ## License
 
-    Copyright 2015 hpfs0 inc.
+    Copyright 2015 hpfs0
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
