@@ -47,13 +47,12 @@ Add <code>dragscalecircleview:hasGuideLine="false"</code> to <code>com.rori.zenv
 The latest version can be downloaded as a zip and referenced by your application as a library project.
 
 ## TODO
-* ~~make the circle window move and drag on imageview.~~
-* ~~fix move the circle window right edge bug.~~
-* ~~impprove performence when the circle window move and drag.~~
-* crop the circle window from imageview.
-* add rect window option.
-* add custom properties of guideline.(et. on/off、size、color).
-* add custom properties of border.(et. size、color).
+- [x] make the circle window move and drag on imageview.
+- [x] fix move the circle window right edge bug.~~
+- [x] impprove performence when the circle window move and drag.~~
+- [ ] crop the circle window from imageview.
+- [ ] add custom properties of guideline.(et. on/off、size、color).
+- [ ] add custom properties of border.(et. size、color).
 
 ## License
 
