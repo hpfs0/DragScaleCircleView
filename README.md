@@ -25,10 +25,11 @@ The latest version can be downloaded as a zip and referenced by your application
 
 ## TODO
 * ~~make the circle window move and drag on imageview.~~
-* crop the circle window from imageview.
 * ~~fix move the circle window right edge bug.~~
-* add rect window option.
 * ~~impprove performence when the circle window move and drag.~~
+* crop the circle window from imageview.
+* add rect window option.
+* add guideline on/off option
 
 ## License
 
