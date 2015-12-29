@@ -7,6 +7,13 @@ a custom imageview that provides dragged and scaled
 ## Why?
 Sometimes need to cut a picture into a circle.
 
+## Dependency
+The lib is published on Jcenter:
+
+```java
+    compile 'com.rori.zenvo.dragscalecircleview:dragscalecircleview:1.0.0'
+```
+
 ## Usage
 To add the DragScaleCircleView to your application, specify com.edmodo.cropper.CropImageView in your layout XML.
 
