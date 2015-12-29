@@ -27,6 +27,22 @@ To add the DragScaleCircleView to your application, specify com.edmodo.cropper.C
         android:src="@drawable/img1"/>
 ```
 
+## Customization
+The default dragScaleCircleView to show the guideline.
+If you want to guideline don't shown, please define the <code>xmlns:dragscalecircleview="http://schemas.android.com/apk/res-auto"</code> on your layout file.
+Add <code>dragscalecircleview:hasGuideLine="false"</code> to <code>com.rori.zenvo.dragscalecircleview.DragScaleCircleView</code>. Just like blew.
+
+```xml
+    <com.rori.zenvo.dragscalecircleview.DragScaleCircleView
+        android:id="@+id/dragScaleCircleView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        dragscalecircleview:hasGuideLine="false"
+        android:clickable="true"
+        android:src="@drawable/img1"/>
+```
+
 ## Download
 The latest version can be downloaded as a zip and referenced by your application as a library project.
 
