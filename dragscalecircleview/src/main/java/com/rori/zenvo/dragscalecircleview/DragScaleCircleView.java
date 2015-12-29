@@ -14,13 +14,12 @@ package com.rori.zenvo.dragscalecircleview;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
@@ -108,7 +107,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     // The outline circle radius.
     private float mHandleRadius;
 
-    // Handle mode.
+    // The Handle mode.
     private int mHandleMode;
 
     // The bitmap used to make surrounding area.
@@ -117,9 +116,14 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     // The canvas used to load bitmap.
     private Canvas mCanvas;
 
+    // -------------------------------------------------------------
+    //                       custom style
+    // -------------------------------------------------------------
+    // The custom attr that make guide line display.
+    private Boolean mHasGuideLine;
 
     // -------------------------------------------------------------
-    //                            constructor
+    //                       constructor
     // -------------------------------------------------------------
     public DragScaleCircleView(Context context) {
         super(context);
@@ -129,19 +133,38 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     public DragScaleCircleView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.DragScaleCircleView);
+        mHasGuideLine = typedArray.getBoolean(R.styleable.DragScaleCircleView_hasGuideLine, true);
         init(context, attrs);
         setOnTouchListener(this);
     }
 
     public DragScaleCircleView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.DragScaleCircleView);
+        mHasGuideLine = typedArray.getBoolean(R.styleable.DragScaleCircleView_hasGuideLine, true);
         init(context, attrs);
         setOnTouchListener(this);
     }
     // -------------------------------------------------------------
-    //                            constructor
+    //                       constructor
     // -------------------------------------------------------------
 
+    /**
+     * Get the value of global mHasGuideLine.
+     * @return mHasGuideLine
+     */
+    public Boolean getmHasGuideLine() {
+        return mHasGuideLine;
+    }
+
+    /**
+     * Set the value of global mHasGuideLine.
+     * @param mHasGuideLine
+     */
+    public void setmHasGuideLine(Boolean mHasGuideLine) {
+        this.mHasGuideLine = mHasGuideLine;
+    }
 
     @Override
     public void setImageDrawable(Drawable drawable) {
@@ -184,17 +207,25 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
             case HANDLE_DOWN:
                 if (mDragDirection == SIDE) {
                     drawHandles(canvas);
-                    drawGuideLine(canvas);
+                    if(mHasGuideLine) {
+                        drawGuideLine(canvas);
+                    }
                 } else if (mDragDirection == CENTER) {
-                    drawGuideLine(canvas);
+                    if(mHasGuideLine){
+                        drawGuideLine(canvas);
+                    }
                 }
                 break;
             case HANDLE_MOVE:
                 if (mDragDirection == SIDE) {
                     drawHandles(canvas);
-                    drawGuideLine(canvas);
+                    if(mHasGuideLine) {
+                        drawGuideLine(canvas);
+                    }
                 } else if (mDragDirection == CENTER) {
-                    drawGuideLine(canvas);
+                    if(mHasGuideLine) {
+                        drawGuideLine(canvas);
+                    }
                 }
                 break;
             case HANDLE_UP:

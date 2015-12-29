@@ -36,7 +36,8 @@ The latest version can be downloaded as a zip and referenced by your application
 * ~~impprove performence when the circle window move and drag.~~
 * crop the circle window from imageview.
 * add rect window option.
-* add guideline on/off option
+* add custom properties of guideline.(et. on/off、size、color).
+* add custom properties of border.(et. size、color).
 
 ## License
 
