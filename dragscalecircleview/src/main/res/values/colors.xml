@@ -6,5 +6,5 @@
     <color name="border">@color/white_translucent</color>
     <color name="guideline">@color/white_translucent</color>
     <color name="corner">@android:color/white</color>
-    <color name="surrouding_area">@color/black_translucent</color>
+    <color name="surrounding_area">@color/black_translucent</color>
 </resources>

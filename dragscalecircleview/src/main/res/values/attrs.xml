@@ -2,5 +2,9 @@
 <resources>
     <declare-styleable name="DragScaleCircleView">
         <attr name="hasGuideLine" format="boolean" />
+        <attr name="guideLineSize" format="float" />
+        <attr name="guideLineColor" format="integer" />
+        <attr name="borderSize" format="float" />
+        <attr name="borderColor" format="integer" />
     </declare-styleable>
 </resources>

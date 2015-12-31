@@ -29,11 +29,11 @@ public class PaintUtil {
     /**
      * create the paint object for drawing the crop window border.
      */
-    public static Paint newBoarderPaint(@NonNull Resources resources){
+    public static Paint newBoarderPaint(@NonNull Resources resources, float size, int color){
         final Paint paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(resources.getColor(R.color.border));
-        paint.setStrokeWidth(resources.getDimension(R.dimen.border_width));
+        paint.setColor(color);
+        paint.setStrokeWidth(size);
         paint.setStyle(Paint.Style.STROKE);
 
         return paint;
@@ -67,12 +67,12 @@ public class PaintUtil {
     /**
      * create the paint object for drawing the crop window corner..
      */
-    public static Paint newGuideLinePaint(@NonNull Resources resources){
+    public static Paint newGuideLinePaint(@NonNull Resources resources, float size, int color){
         final Paint paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(resources.getColor(R.color.guideline));
+        paint.setColor(color);
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(resources.getDimension(R.dimen.guideline_width));
+        paint.setStrokeWidth(size);
 
         return paint;
     }
