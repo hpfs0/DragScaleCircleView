@@ -32,11 +32,17 @@ The default dragScaleCircleView to show the guideline.
 If you want to guideline don't shown, please define the <code>xmlns:dragscalecircleview="http://schemas.android.com/apk/res-auto"</code> on your layout file.
 
 custom attrs:
+
 <code>dragscalecircleview:hasGuideLine="false"</code>
+
 <code>dragscalecircleview:guideLineSize="5"</code>
+
 <code>dragscalecircleview:guideLineColor="@android:color/guideLineColor"</code>
+
 <code>dragscalecircleview:borderSize="5"</code>
+
 <code>dragscalecircleview:borderColor="@android:color/borderColor"</code>
+
 
 to <code>com.rori.zenvo.dragscalecircleview.DragScaleCircleView</code>. Just like blew.
 
