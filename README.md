@@ -30,7 +30,15 @@ To add the DragScaleCircleView to your application, specify com.edmodo.cropper.C
 ## Customization
 The default dragScaleCircleView to show the guideline.
 If you want to guideline don't shown, please define the <code>xmlns:dragscalecircleview="http://schemas.android.com/apk/res-auto"</code> on your layout file.
-Add <code>dragscalecircleview:hasGuideLine="false"</code> to <code>com.rori.zenvo.dragscalecircleview.DragScaleCircleView</code>. Just like blew.
+
+custom attrs:
+<code>dragscalecircleview:hasGuideLine="false"</code>
+<code>dragscalecircleview:guideLineSize="5"</code>
+<code>dragscalecircleview:guideLineColor="@android:color/guideLineColor"</code>
+<code>dragscalecircleview:borderSize="5"</code>
+<code>dragscalecircleview:borderColor="@android:color/borderColor"</code>
+
+to <code>com.rori.zenvo.dragscalecircleview.DragScaleCircleView</code>. Just like blew.
 
 ```xml
     <com.rori.zenvo.dragscalecircleview.DragScaleCircleView
@@ -51,8 +59,8 @@ The latest version can be downloaded as a zip and referenced by your application
 - [x] fix move the circle window right edge bug.
 - [x] impprove performence when the circle window move and drag.
 - [ ] crop the circle window from imageview.
-- [ ] add custom properties of guideline.(et. on/off、size、color).
-- [ ] add custom properties of border.(et. size、color).
+- [x] add custom properties of guideline.(et. on/off、size、color).
+- [x] add custom properties of border.(et. size、color).
 
 ## License
 
