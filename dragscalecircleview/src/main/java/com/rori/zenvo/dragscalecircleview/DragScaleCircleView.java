@@ -20,7 +20,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -240,6 +244,70 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
         this.mBorderColor = mBorderColor;
     }
 
+    /**
+     * Get cropped circle bitmap of selected part of imagge
+     * @return
+     */
+    public Bitmap getCroppedCircleBitmap() {
+
+        Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
+
+        final Paint paint = new Paint();
+        final RectF croppedRect = getCroppedRect();
+
+        croppedRect.top -= mBitmapRect.top;
+        croppedRect.left -= mBitmapRect.left;
+        croppedRect.bottom -= mBitmapRect.top;
+        croppedRect.right -= mBitmapRect.left;
+
+        float scale = getScale();
+        setRectScale(croppedRect, scale);
+
+        final Rect rectSrc = new Rect();
+        rectSrc.set((int) croppedRect.left, (int) croppedRect.top, (int) croppedRect.right, (int) croppedRect.bottom);
+
+        int dstImageSize = rectSrc.width();
+        final Rect rectDst = new Rect(0, 0, dstImageSize, dstImageSize);
+        float dstRect = (float) dstImageSize / 2f;
+        Bitmap mOutputBitmap = Bitmap.createBitmap(dstImageSize, dstImageSize, Bitmap.Config.ARGB_4444);
+
+        Canvas mCanvas = new Canvas(mOutputBitmap);
+        mCanvas.drawARGB(0, 0, 0, 0);
+        mCanvas.drawCircle(dstRect, dstRect, dstRect, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        mCanvas.drawBitmap(bitmap, rectSrc, rectDst, paint);
+
+        return mOutputBitmap;
+    }
+
+    /**
+     * Get displayed image scale (image displayed on screen has different size than bitmap assigned to ImageView)
+     * @return
+     */
+    private float getScale() {
+        Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
+        return bitmap.getWidth() / mBitmapRect.width();
+    }
+
+    private void setRectScale(RectF rect, float scale) {
+        rect.top = rect.top * scale;
+        rect.left = rect.left * scale;
+        rect.bottom = rect.bottom * scale;
+        rect.right = rect.right * scale;
+    }
+
+    /**
+     * Get rect for cropped part of image
+     * @return
+     */
+    private RectF getCroppedRect() {
+        float x1 = mCenterPointX - mRadius;
+        float y1 = mCenterPointY - mRadius;
+        float x2 = mCenterPointX + mRadius;
+        float y2 = mCenterPointY + mRadius;
+        return new RectF(x1, y1, x2, y2);
+    }
+
     @Override
     public void setImageDrawable(Drawable drawable) {
         super.setImageDrawable(drawable);
@@ -275,7 +343,6 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-
         super.onLayout(changed, left, top, right, bottom);
 
         mBitmapRect = getBitmapRect();
@@ -333,7 +400,6 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
         } else if (action == MotionEvent.ACTION_MOVE) {
             setHandleMode(HANDLE_MOVE);
             drag((DragScaleCircleView) v, event, action);
-
         } else if (action == MotionEvent.ACTION_UP) {
             setHandleMode(HANDLE_UP);
             drag((DragScaleCircleView) v, event, action);
@@ -474,7 +540,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
         mDrawableHeight = bitmapRect.height() / mScaleY;
         mCenterPointX = mDrawableWidth / 2.0f;
         mCenterPointY = mDrawableHeight / 2.0f;
-        mRadius = (Math.min(mDrawableWidth, mDrawableHeight) - mOffset) / 2.0f;
+        mRadius = (Math.min(bitmapRect.width(), bitmapRect.height()) - mOffset) / 2.0f;
     }
 
     /**

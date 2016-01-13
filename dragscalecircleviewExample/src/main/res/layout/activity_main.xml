@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    xmlns:dragscalecircleview="http://schemas.android.com/apk/res-auto" android:layout_height="match_parent" tools:context=".MainActivity">
+                xmlns:dragscalecircleview="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".MainActivity">
 
     <com.rori.zenvo.dragscalecircleview.DragScaleCircleView
         android:id="@+id/dragScaleCircleView"
@@ -9,38 +12,63 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:clickable="true"
-        dragscalecircleview:hasGuideLine="false"
         android:src="@drawable/img1"
-         />
+        dragscalecircleview:hasGuideLine="false"/>
 
     <RelativeLayout
-        android:layout_below="@id/dragScaleCircleView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_below="@id/dragScaleCircleView">
+
         <LinearLayout
             android:id="@+id/option1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
                 <TextView
                     android:id="@+id/guideLineOnOff"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_weight="5"
                     android:gravity="center_vertical"
-                    android:layout_gravity="center_vertical"
                     android:text="Show Guideine"/>
+
                 <Switch
                     android:id="@+id/guideLineSwitch"
-                    android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/getCroppedImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Get cropped image"/>
+
+                <ImageView
+                    android:id="@+id/croppedImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
         </LinearLayout>
+
     </RelativeLayout>
 
 </RelativeLayout>
