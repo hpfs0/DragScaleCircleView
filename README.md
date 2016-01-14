@@ -64,7 +64,8 @@ The latest version can be downloaded as a zip and referenced by your application
 - [x] make the circle window move and drag on imageview.
 - [x] fix move the circle window right edge bug.
 - [x] impprove performence when the circle window move and drag.
-- [ ] crop the circle window from imageview.
+- [x] crop the circle window from imageview.
+- [ ] cropped image can be saved.
 - [x] add custom properties of guideline.(et. on/off、size、color).
 - [x] add custom properties of border.(et. size、color).
 
