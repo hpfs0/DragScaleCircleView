@@ -11,7 +11,7 @@ Sometimes need to cut a picture into a circle.
 The lib is published on Jcenter:
 
 ```java
-    compile 'com.rori.zenvo.dragscalecircleview:dragscalecircleview:1.0.0'
+    compile 'com.rori.zenvo.dragscalecircleview:dragscalecircleview:1.0.1'
 ```
 
 ## Usage
