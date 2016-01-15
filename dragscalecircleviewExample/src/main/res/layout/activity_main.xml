@@ -10,7 +10,7 @@
         android:id="@+id/dragScaleCircleView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:scaleType="centerCrop"
         android:clickable="true"
         android:src="@drawable/img1"
         dragscalecircleview:hasGuideLine="false"/>
@@ -38,7 +38,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="5"
                     android:gravity="center_vertical"
-                    android:text="Show Guideine"/>
+                    android:text="Show GuideLine"/>
 
                 <Switch
                     android:id="@+id/guideLineSwitch"
@@ -46,6 +46,56 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:layout_marginRight="10dp"
+                    android:text="GuideLine Color"/>
+
+                <ImageView
+                    android:id="@+id/guideLineColor1"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="3dp"
+                    android:background="@android:color/holo_red_light"/>
+
+                <ImageView
+                    android:id="@+id/guideLineColor2"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="3dp"
+                    android:background="@android:color/holo_green_light"/>
+
+                <ImageView
+                    android:id="@+id/guideLineColor3"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="3dp"
+                    android:background="@android:color/holo_purple"/>
+
+                <ImageView
+                    android:id="@+id/guideLineColor4"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="3dp"
+                    android:background="@android:color/holo_blue_light"/>
+
+                <ImageView
+                    android:id="@+id/guideLineColor5"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="3dp"
+                    android:background="@android:color/holo_orange_light"/>
+
             </LinearLayout>
 
             <LinearLayout

@@ -32,7 +32,6 @@ import android.util.AttributeSet;
 import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.rori.zenvo.util.PaintUtil;
@@ -42,7 +41,7 @@ import com.rori.zenvo.util.PaintUtil;
  *
  * @author hpfs0
  */
-public class DragScaleCircleView extends ImageView implements View.OnTouchListener {
+public class DragScaleCircleView extends ImageView {
 
     @SuppressWarnings("unused")
     private static final String TAG = DragScaleCircleView.class.getName();
@@ -77,10 +76,6 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     // Offset from the screen during initialization.
     private float mOffset;
 
-    private float mScaleX, mScaleY;
-
-    private float mTransX, mTransY;
-
     // The direction that drag side ward the circle view.
     private static final int SIDE = 0x10;
 
@@ -101,7 +96,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     private Paint mBoarderPaint;
 
     // The paint used to darken the surrounding areas outside the crop area.
-    private  Paint mSurroundingAreaOverlayPaint;
+    private Paint mSurroundingAreaOverlayPaint;
 
     // The paint that show outline circle on touch.
     private Paint mHandlePaint;
@@ -145,20 +140,16 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     public DragScaleCircleView(Context context) {
         super(context);
         init(context, null);
-        setOnTouchListener(this);
     }
 
     public DragScaleCircleView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
-        setOnTouchListener(this);
     }
 
     public DragScaleCircleView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-
         init(context, attrs);
-        setOnTouchListener(this);
     }
     // -------------------------------------------------------------
     //                       constructor
@@ -166,6 +157,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Get the value of global mHasGuideLine.
+     *
      * @return mHasGuideLine
      */
     public Boolean getmHasGuideLine() {
@@ -174,6 +166,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Set the value of global mHasGuideLine.
+     *
      * @param mHasGuideLine
      */
     public void setmHasGuideLine(Boolean mHasGuideLine) {
@@ -182,6 +175,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Get the value of global mGuideLineSize.
+     *
      * @return mGuideLineSize
      */
     public float getmGuideLineSize() {
@@ -190,6 +184,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Set the value of global mGuideLineSize.
+     *
      * @param mGuideLineSize
      */
     public void setmGuideLineSize(float mGuideLineSize) {
@@ -198,6 +193,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Get the value of global mGuideLineColor.
+     *
      * @return
      */
     public int getmGuideLineColor() {
@@ -206,6 +202,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Set the value of global mGuideLineColor.
+     *
      * @param mGuideLineColor
      */
     public void setmGuideLineColor(int mGuideLineColor) {
@@ -214,6 +211,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Get the value of global mBorderSize.
+     *
      * @return mBorderSize
      */
     public float getmBorderSize() {
@@ -222,6 +220,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Set the value of global mBorderSize.
+     *
      * @param mBorderSize
      */
     public void setmBorderSize(float mBorderSize) {
@@ -230,6 +229,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Get the value of global mBorderColor.
+     *
      * @return mBorderColor
      */
     public int getmBorderColor() {
@@ -238,6 +238,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Set the value of global mBorderColor.
+     *
      * @param mBorderColor
      */
     public void setmBorderColor(int mBorderColor) {
@@ -245,8 +246,17 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     }
 
     /**
-     * Get cropped circle bitmap of selected part of imagge
-     * @return
+     * Set the color of guide line paint
+     * @param color color
+     */
+    public void setGuideLinePaintColor(int color) {
+        this.mGuideLinePaint.setColor(color);
+    }
+
+    /**
+     * Get cropped circle bitmap of selected part of image
+     *
+     * @return cropped image
      */
     public Bitmap getCroppedCircleBitmap() {
 
@@ -268,20 +278,21 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
         int dstImageSize = rectSrc.width();
         final Rect rectDst = new Rect(0, 0, dstImageSize, dstImageSize);
-        float dstRect = (float) dstImageSize / 2f;
-        Bitmap mOutputBitmap = Bitmap.createBitmap(dstImageSize, dstImageSize, Bitmap.Config.ARGB_4444);
+        float dstRect = dstImageSize / 2.0f;
+        Bitmap outputBitmap = Bitmap.createBitmap(dstImageSize, dstImageSize, Bitmap.Config.ARGB_8888);
 
-        Canvas mCanvas = new Canvas(mOutputBitmap);
-        mCanvas.drawARGB(0, 0, 0, 0);
+        Canvas mCanvas = new Canvas(outputBitmap);
+        mCanvas.drawARGB(0, 255, 255, 255);
         mCanvas.drawCircle(dstRect, dstRect, dstRect, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         mCanvas.drawBitmap(bitmap, rectSrc, rectDst, paint);
 
-        return mOutputBitmap;
+        return outputBitmap;
     }
 
     /**
      * Get displayed image scale (image displayed on screen has different size than bitmap assigned to ImageView)
+     *
      * @return
      */
     private float getScale() {
@@ -298,6 +309,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Get rect for cropped part of image
+     *
      * @return
      */
     private RectF getCroppedRect() {
@@ -345,8 +357,11 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
-        mBitmapRect = getBitmapRect();
-        initCircleCropWindow(mBitmapRect);
+        // fix call CircleCropWindow() after crop button click
+        if (changed) {
+            mBitmapRect = getBitmapRect();
+            initCircleCropWindow(mBitmapRect);
+        }
     }
 
     /**
@@ -363,11 +378,11 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
             case HANDLE_DOWN:
                 if (mDragDirection == SIDE) {
                     drawHandles(canvas);
-                    if(mHasGuideLine) {
+                    if (mHasGuideLine) {
                         drawGuideLine(canvas);
                     }
                 } else if (mDragDirection == CENTER) {
-                    if(mHasGuideLine){
+                    if (mHasGuideLine) {
                         drawGuideLine(canvas);
                     }
                 }
@@ -375,11 +390,11 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
             case HANDLE_MOVE:
                 if (mDragDirection == SIDE) {
                     drawHandles(canvas);
-                    if(mHasGuideLine) {
+                    if (mHasGuideLine) {
                         drawGuideLine(canvas);
                     }
                 } else if (mDragDirection == CENTER) {
-                    if(mHasGuideLine) {
+                    if (mHasGuideLine) {
                         drawGuideLine(canvas);
                     }
                 }
@@ -390,21 +405,33 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event) {
+        // If this view is not enabled, touch event must return false.
+        if (!isEnabled()) {
+            return false;
+        }
+
         int action = event.getAction();
         if (action == MotionEvent.ACTION_DOWN) {
             setHandleMode(HANDLE_DOWN);
             mLastY = (int) event.getRawY();
             mLastX = (int) event.getRawX();
-            mDragDirection = getDragDirection((DragScaleCircleView) v, (int) event.getX(), (int) event.getY());
+            mDragDirection = getDragDirection((int) event.getX(), (int) event.getY());
+            invalidate();
         } else if (action == MotionEvent.ACTION_MOVE) {
             setHandleMode(HANDLE_MOVE);
-            drag((DragScaleCircleView) v, event, action);
+            drag(event, action);
+            invalidate();
         } else if (action == MotionEvent.ACTION_UP) {
             setHandleMode(HANDLE_UP);
-            drag((DragScaleCircleView) v, event, action);
+            drag(event, action);
+            invalidate();
+        } else if (action == MotionEvent.ACTION_CANCEL) {
+            getParent().requestDisallowInterceptTouchEvent(false);
+            //onActionUp();
+            return true;
         }
-        invalidate();
+
         return true;
     }
 
@@ -414,6 +441,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Draw a corner on the crop circle window.
+     *
      * @param canvas canvas
      */
     private void drawHandles(Canvas canvas) {
@@ -425,6 +453,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Draw crop circle window.
+     *
      * @param canvas
      */
     private void drawCircleBorder(@NonNull Canvas canvas) {
@@ -433,6 +462,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Draw the darken surrounding area on canvas.
+     *
      * @param canvas
      */
     private void drawDarkenSurroundingArea(@NonNull Canvas canvas) {
@@ -446,45 +476,46 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Draw a guideline on canvas
+     *
      * @param canvas canvas
      */
     private void drawGuideLine(Canvas canvas) {
-        float offset = (float) Math.sqrt(Math.pow(mRadius, 2) / 2);
+        float offset = (float) Math.sqrt(Math.pow(mRadius, 2) / 2.0f);
         // top left
         float topLeftPointX = mCenterPointX - offset;
-        float topLeftpointY = mCenterPointY - offset;
+        float topLeftPointY = mCenterPointY - offset;
 
         // top right
         float topRightPointX = mCenterPointX + offset;
-        float topRightPpointY = topLeftpointY;
+        float topRightPointY = topLeftPointY;
 
         // bottom left
         float bottomLeftPointX = topLeftPointX;
-        float bottomLeftpointY = mCenterPointY + offset;
+        float bottomLeftPointY = mCenterPointY + offset;
 
         // bottom right
         float bottomRightPointX = topRightPointX;
-        float bottomRightPointY = bottomLeftpointY;
+        float bottomRightPointY = bottomLeftPointY;
 
-        canvas.drawLine(topLeftPointX, topLeftpointY, topRightPointX, topRightPpointY, mGuideLinePaint);
+        canvas.drawLine(topLeftPointX, topLeftPointY, topRightPointX, topRightPointY, mGuideLinePaint);
         canvas.drawLine(mCenterPointX - mRadius, mCenterPointY, mCenterPointX + mRadius, mCenterPointY, mGuideLinePaint);
-        canvas.drawLine(bottomLeftPointX, bottomLeftpointY, bottomRightPointX, bottomRightPointY, mGuideLinePaint);
+        canvas.drawLine(bottomLeftPointX, bottomLeftPointY, bottomRightPointX, bottomRightPointY, mGuideLinePaint);
 
-        canvas.drawLine(topLeftPointX, topLeftpointY, bottomLeftPointX, bottomLeftpointY, mGuideLinePaint);
+        canvas.drawLine(topLeftPointX, topLeftPointY, bottomLeftPointX, bottomLeftPointY, mGuideLinePaint);
         canvas.drawLine(mCenterPointX, mCenterPointY - mRadius, mCenterPointX, mCenterPointY + mRadius, mGuideLinePaint);
-        canvas.drawLine(topRightPointX, topRightPpointY, bottomRightPointX, bottomRightPointY, mGuideLinePaint);
+        canvas.drawLine(topRightPointX, topRightPointY, bottomRightPointX, bottomRightPointY, mGuideLinePaint);
 
     }
 
     /**
      * Get the drag direction side or center
-     * @param v the circle view
+     *
      * @param x the touch point X
      * @param y the touch point Y
      * @return side or center
      */
-    protected int getDragDirection(DragScaleCircleView v, int x, int y) {
-        double d = Math.sqrt(Math.pow(x - v.mCenterPointX, 2) + Math.pow(y - v.mCenterPointY, 2));
+    protected int getDragDirection(int x, int y) {
+        double d = Math.sqrt(Math.pow(x - mCenterPointX, 2) + Math.pow(y - mCenterPointY, 2));
         // touch point at the circle side
         if (d >= mRadius - mOffset / 2 && d <= mRadius + mOffset / 2) {
             return SIDE;
@@ -497,11 +528,11 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
 
     /**
      * Drag the circle view.
-     * @param v      the circle view
+     *
      * @param event  event
      * @param action action
      */
-    protected void drag(View v, MotionEvent event, int action) {
+    protected void drag(MotionEvent event, int action) {
         switch (action) {
             case MotionEvent.ACTION_MOVE:
                 int dx = (int) event.getRawX() - mLastX;
@@ -510,10 +541,10 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
                 int touchY = (int) event.getY();
                 switch (mDragDirection) {
                     case CENTER:
-                        center((DragScaleCircleView) v, dx, dy);
+                        center(dx, dy);
                         break;
                     case SIDE:
-                        side((DragScaleCircleView) v, touchX, touchY, touchX + dx, touchY + dy);
+                        side(touchX, touchY, touchX + dx, touchY + dy);
                         break;
 
                 }
@@ -537,7 +568,7 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
         // Initialize circle crop window to have 10% padding of min width/height to Drawable's bounds.
         mOffset = 0.1f * Math.min(bitmapRect.width(), bitmapRect.height());
         mDrawableWidth = bitmapRect.width();
-        mDrawableHeight = bitmapRect.height() / mScaleY;
+        mDrawableHeight = bitmapRect.height();
         mCenterPointX = mDrawableWidth / 2.0f;
         mCenterPointY = mDrawableHeight / 2.0f;
         mRadius = (Math.min(bitmapRect.width(), bitmapRect.height()) - mOffset) / 2.0f;
@@ -549,33 +580,28 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     private RectF getBitmapRect() {
 
         final Drawable drawable = getDrawable();
+        final Bitmap src = ((BitmapDrawable) getDrawable()).getBitmap();
+
+        if (drawable.getBounds().right > mScreenWidth) {
+            float scale = mScreenWidth / drawable.getBounds().right;
+            Matrix matrix = new Matrix();
+            matrix.postScale(scale, scale);
+            setImageBitmap(Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true));
+        }
+
         if (drawable == null) {
             return new RectF();
         }
 
-        // Get image matrix values and place them in an array.
-        final float[] matrixValues = new float[9];
-        getImageMatrix().getValues(matrixValues);
-
-        // Extract the scale and translation values from the matrix.
-        mScaleX = matrixValues[Matrix.MSCALE_X];
-        mScaleY = matrixValues[Matrix.MSCALE_Y];
-        mTransX = matrixValues[Matrix.MTRANS_X];
-        mTransY = matrixValues[Matrix.MTRANS_Y];
-
-        // Get the width and height of the original bitmap.
-        final int drawableIntrinsicWidth = drawable.getIntrinsicWidth();
-        final int drawableIntrinsicHeight = drawable.getIntrinsicHeight();
-
         // Calculate the dimensions as seen on screen.
-        final int drawableDisplayWidth = Math.round(drawableIntrinsicWidth * mScaleX);
-        final int drawableDisplayHeight = Math.round(drawableIntrinsicHeight * mScaleY);
+        final int drawableDisplayWidth = ((BitmapDrawable) getDrawable()).getBitmap().getWidth();
+        final int drawableDisplayHeight = ((BitmapDrawable) getDrawable()).getBitmap().getHeight();
 
         // Get the Rect of the displayed image within the ImageView.
-        final float left =Math.max(mTransX, 0);
-        final float top = Math.max(mTransY, 0);
+        final float left = 0;
+        final float top = 0;
         final float right = left + drawableDisplayWidth;
-        final float bottom = top + drawableDisplayHeight ;
+        final float bottom = top + drawableDisplayHeight;
 
         return new RectF(left, top, right, bottom);
     }
@@ -583,11 +609,10 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     /**
      * move the circle view.
      *
-     * @param v  the circle view
      * @param dx move X
      * @param dy move Y
      */
-    private void center(DragScaleCircleView v, int dx, int dy) {
+    private void center(int dx, int dy) {
         if (mCenterPointX + dx - mRadius < 0) {
             return;
         }
@@ -607,13 +632,12 @@ public class DragScaleCircleView extends ImageView implements View.OnTouchListen
     /**
      * touch on side scale in or out process.
      *
-     * @param v     the circle view
      * @param lastX touch point X
      * @param lastY touch point Y
      * @param rawX  touch move point X
      * @param rawY  touch move point Y
      */
-    private void side(DragScaleCircleView v, int lastX, int lastY, int rawX, int rawY) {
+    private void side(int lastX, int lastY, int rawX, int rawY) {
         // action_up: the touch point to the distance of the center on action up
         double rawDistance = Math.sqrt(Math.pow(rawX - mCenterPointX, 2) + Math.pow(rawY - mCenterPointY, 2));
         // get max radius of this context
