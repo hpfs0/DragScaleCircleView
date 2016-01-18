@@ -1,16 +1,29 @@
 package com.rori.zenvo.dragscalecircleviewexample;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.Switch;
 
 import com.rori.zenvo.dragscalecircleview.DragScaleCircleView;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,6 +61,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         croppedImage = (ImageView) findViewById(R.id.croppedImage);
+        croppedImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Drawable drawable = croppedImage.getDrawable();
+                if (drawable != null) {
+                    showDialog(drawable);
+                }
+            }
+        });
+        croppedImage.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                PopupMenu popupMenu = new PopupMenu(MainActivity.this, croppedImage);
+                popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.saveImage:
+                                saveImage();
+                                break;
+                            case R.id.loadImage:
+                                loadImage();
+                                break;
+                            case R.id.clearImage:
+                                croppedImage.setImageDrawable(null);
+                                break;
+                            default:
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.show();
+                return false;
+            }
+        });
+
         getCroppedImage = (Button) findViewById(R.id.getCroppedImage);
         getCroppedImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,5 +117,45 @@ public class MainActivity extends AppCompatActivity {
                 mDragScaleCircleView.setGuideLinePaintColor(((ColorDrawable)target.getBackground()).getColor());
             }
         });
+    }
+
+    private void showDialog(final Drawable drawable) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final AlertDialog dialog = builder.create();
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogLayout = inflater.inflate(R.layout.image_dialog, null);
+        ImageView image = (ImageView) dialogLayout.findViewById(R.id.imageDialog);
+        image.setImageDrawable(drawable);
+
+        dialog.setView(dialogLayout);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogTheme;
+        dialog.show();
+    }
+
+    private void saveImage() {
+        Bitmap bitmap = ((BitmapDrawable)croppedImage.getDrawable()).getBitmap();
+        File cameraPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
+        if (!cameraPath.exists()) {
+            cameraPath.mkdirs();
+        }
+        File cachePath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera/crop_image.jpg");
+
+        try {
+            cachePath.createNewFile();
+            FileOutputStream outputStream = new FileOutputStream(cachePath);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadImage() {
+        Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera/crop_image.jpg").copy(Bitmap.Config.ARGB_8888, true);
+        if (bitmap != null) {
+            croppedImage.setImageDrawable(null);
+            croppedImage.setImageBitmap(bitmap);
+        }
     }
 }
