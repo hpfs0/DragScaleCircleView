@@ -60,17 +60,18 @@ Just like blew.
 The latest version can be downloaded as a zip and referenced by your application as a library project.
 
 ## TODO
+- [ ] add background image selector from file system.
 - [x] make the circle window move and drag on imageview.
 - [x] fix move the circle window right edge bug.
 - [x] impprove performence when the circle window move and drag.
 - [x] crop the circle window from imageview.
-- [x] cropped image can be saved.
+- [x] cropped image can be saved/load.
 - [x] add custom properties of guideline.(et. on/off、size、color).
 - [x] add custom properties of border.(et. size、color).
 
 ## License
 
-    Copyright 2015 hpfs0
+    Copyright 2015~2016 hpfs0
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
