@@ -374,33 +374,13 @@ public class DragScaleCircleView extends ImageView {
         super.onDraw(canvas);
         drawDarkenSurroundingArea(canvas);
         drawCircleBorder(canvas);
-        switch (mHandleMode) {
-            case HANDLE_DOWN:
-                if (mDragDirection == SIDE) {
-                    drawHandles(canvas);
-                    if (mHasGuideLine) {
-                        drawGuideLine(canvas);
-                    }
-                } else if (mDragDirection == CENTER) {
-                    if (mHasGuideLine) {
-                        drawGuideLine(canvas);
-                    }
-                }
-                break;
-            case HANDLE_MOVE:
-                if (mDragDirection == SIDE) {
-                    drawHandles(canvas);
-                    if (mHasGuideLine) {
-                        drawGuideLine(canvas);
-                    }
-                } else if (mDragDirection == CENTER) {
-                    if (mHasGuideLine) {
-                        drawGuideLine(canvas);
-                    }
-                }
-                break;
-            case HANDLE_UP:
-                break;
+        if(mHandleMode == HANDLE_DOWN || mHandleMode == HANDLE_MOVE) {
+            if(mDragDirection == SIDE) {
+                drawHandles(canvas);
+            }
+            if (mHasGuideLine && (mDragDirection == SIDE || mDragDirection == CENTER)) {
+                drawGuideLine(canvas);
+            }
         }
     }
 
