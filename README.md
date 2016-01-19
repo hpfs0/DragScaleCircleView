@@ -1,5 +1,5 @@
 # DragScaleCircleView
-a custom imageview that provides dragged and scaled
+A custom imageview that provides the circle window can be dragged and scaled, crop image. 
 
 ## How does it look?
 ![image](https://github.com/hpfs0/DragScaleCircleView/blob/master/show.gif)
@@ -8,14 +8,14 @@ a custom imageview that provides dragged and scaled
 Sometimes need to cut a picture into a circle.
 
 ## Install
-The lib is published on Jcenter:
+The library is published on Jcenter:
 
 ```java
     compile 'com.rori.zenvo.dragscalecircleview:dragscalecircleview:1.0.1'
 ```
 
 ## Usage
-To add the DragScaleCircleView to your application, specify com.edmodo.cropper.CropImageView in your layout XML.
+To add the DragScaleCircleView to your application, specify com.rori.zenvo.dragscalecircleview.DragScaleCircleView in your layout XML.
 
 ```xml
     <com.rori.zenvo.dragscalecircleview.DragScaleCircleView
@@ -29,22 +29,21 @@ To add the DragScaleCircleView to your application, specify com.edmodo.cropper.C
 
 ## Customization
 The default dragScaleCircleView to show the guideline.
-If you want to guideline don't shown, please define the <code>xmlns:dragscalecircleview="http://schemas.android.com/apk/res-auto"</code> on your layout file.
+If you want to guideline don't shown, please define the <code>xmlns:app="http://schemas.android.com/apk/res-auto"</code> on your layout file.
 
 custom attrs:
 
-<code>dragscalecircleview:hasGuideLine="false"</code>
+<code>app:hasGuideLine</code> : When drag the circle window's guide line diplay/not display flag.
 
-<code>dragscalecircleview:guideLineSize="5"</code>
+<code>app:guideLineSize</code> : The size of circle window's guide line.
 
-<code>dragscalecircleview:guideLineColor="@android:color/guideLineColor"</code>
+<code>app:guideLineColor</code> : The color of circle window's guide line.
 
-<code>dragscalecircleview:borderSize="5"</code>
+<code>app:borderSize</code> : The size of circle window's border line.
 
-<code>dragscalecircleview:borderColor="@android:color/borderColor"</code>
+<code>app:borderColor</code> : The color of circle window's border line.
 
-
-to <code>com.rori.zenvo.dragscalecircleview.DragScaleCircleView</code>. Just like blew.
+Just like blew.
 
 ```xml
     <com.rori.zenvo.dragscalecircleview.DragScaleCircleView
@@ -61,17 +60,18 @@ to <code>com.rori.zenvo.dragscalecircleview.DragScaleCircleView</code>. Just lik
 The latest version can be downloaded as a zip and referenced by your application as a library project.
 
 ## TODO
+- [ ] add background image selector from file system.
 - [x] make the circle window move and drag on imageview.
 - [x] fix move the circle window right edge bug.
 - [x] impprove performence when the circle window move and drag.
 - [x] crop the circle window from imageview.
-- [ ] cropped image can be saved.
+- [x] cropped image can be saved/load.
 - [x] add custom properties of guideline.(et. on/off、size、color).
 - [x] add custom properties of border.(et. size、color).
 
 ## License
 
-    Copyright 2015 hpfs0
+    Copyright 2015~2016 hpfs0
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
