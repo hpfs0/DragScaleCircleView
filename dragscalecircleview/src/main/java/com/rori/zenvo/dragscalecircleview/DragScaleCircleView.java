@@ -46,6 +46,9 @@ public class DragScaleCircleView extends ImageView {
     @SuppressWarnings("unused")
     private static final String TAG = DragScaleCircleView.class.getName();
 
+    // The min radius of circle window can be scale.
+    private static final int MIN_CIRCLE_WINDOW_RADIUS = 30;
+
     // The drawable width.
     protected float mDrawableWidth;
 
@@ -247,6 +250,7 @@ public class DragScaleCircleView extends ImageView {
 
     /**
      * Set the color of guide line paint
+     *
      * @param color color
      */
     public void setGuideLinePaintColor(int color) {
@@ -293,7 +297,7 @@ public class DragScaleCircleView extends ImageView {
     /**
      * Get displayed image scale (image displayed on screen has different size than bitmap assigned to ImageView)
      *
-     * @return
+     * @return displayed image scale
      */
     private float getScale() {
         Bitmap bitmap = ((BitmapDrawable) getDrawable()).getBitmap();
@@ -310,7 +314,7 @@ public class DragScaleCircleView extends ImageView {
     /**
      * Get rect for cropped part of image
      *
-     * @return
+     * @return rect for cropped part of image
      */
     private RectF getCroppedRect() {
         float x1 = mCenterPointX - mRadius;
@@ -367,15 +371,15 @@ public class DragScaleCircleView extends ImageView {
     /**
      * drawing the view.
      *
-     * @param canvas
+     * @param canvas canvas
      */
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawDarkenSurroundingArea(canvas);
         drawCircleBorder(canvas);
-        if(mHandleMode == HANDLE_DOWN || mHandleMode == HANDLE_MOVE) {
-            if(mDragDirection == SIDE) {
+        if (mHandleMode == HANDLE_DOWN || mHandleMode == HANDLE_MOVE) {
+            if (mDragDirection == SIDE) {
                 drawHandles(canvas);
             }
             if (mHasGuideLine && (mDragDirection == SIDE || mDragDirection == CENTER)) {
@@ -408,8 +412,6 @@ public class DragScaleCircleView extends ImageView {
             invalidate();
         } else if (action == MotionEvent.ACTION_CANCEL) {
             getParent().requestDisallowInterceptTouchEvent(false);
-            //onActionUp();
-            return true;
         }
 
         return true;
@@ -424,7 +426,7 @@ public class DragScaleCircleView extends ImageView {
      *
      * @param canvas canvas
      */
-    private void drawHandles(Canvas canvas) {
+    private void drawHandles(@NonNull Canvas canvas) {
         canvas.drawCircle(mCenterPointX - mRadius, mCenterPointY, mHandleRadius, mHandlePaint);
         canvas.drawCircle(mCenterPointX, mCenterPointY + mRadius, mHandleRadius, mHandlePaint);
         canvas.drawCircle(mCenterPointX, mCenterPointY - mRadius, mHandleRadius, mHandlePaint);
@@ -434,7 +436,7 @@ public class DragScaleCircleView extends ImageView {
     /**
      * Draw crop circle window.
      *
-     * @param canvas
+     * @param canvas canvas
      */
     private void drawCircleBorder(@NonNull Canvas canvas) {
         canvas.drawCircle(mCenterPointX, mCenterPointY, mRadius, mBoarderPaint);
@@ -443,7 +445,7 @@ public class DragScaleCircleView extends ImageView {
     /**
      * Draw the darken surrounding area on canvas.
      *
-     * @param canvas
+     * @param canvas canvas
      */
     private void drawDarkenSurroundingArea(@NonNull Canvas canvas) {
         mBitmap = Bitmap.createBitmap(canvas.getWidth(), (canvas.getHeight()), Bitmap.Config.ARGB_8888);
@@ -497,10 +499,10 @@ public class DragScaleCircleView extends ImageView {
     protected int getDragDirection(int x, int y) {
         double d = Math.sqrt(Math.pow(x - mCenterPointX, 2) + Math.pow(y - mCenterPointY, 2));
         // touch point at the circle side
-        if (d >= mRadius - mOffset / 2 && d <= mRadius + mOffset / 2) {
+        if (d >= mRadius - mOffset / 2.0f && d <= mRadius + mOffset / 2.0f) {
             return SIDE;
         }
-        if (d < mRadius - mOffset / 2) {
+        if (d < mRadius - mOffset / 2.0f) {
             return CENTER;
         }
         return 0;
@@ -560,6 +562,11 @@ public class DragScaleCircleView extends ImageView {
     private RectF getBitmapRect() {
 
         final Drawable drawable = getDrawable();
+
+        if (drawable == null) {
+            return new RectF();
+        }
+
         final Bitmap src = ((BitmapDrawable) getDrawable()).getBitmap();
 
         if (drawable.getBounds().right > mScreenWidth) {
@@ -567,10 +574,6 @@ public class DragScaleCircleView extends ImageView {
             Matrix matrix = new Matrix();
             matrix.postScale(scale, scale);
             setImageBitmap(Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true));
-        }
-
-        if (drawable == null) {
-            return new RectF();
         }
 
         // Calculate the dimensions as seen on screen.
@@ -619,63 +622,47 @@ public class DragScaleCircleView extends ImageView {
      */
     private void side(int lastX, int lastY, int rawX, int rawY) {
         // action_up: the touch point to the distance of the center on action up
-        double rawDistance = Math.sqrt(Math.pow(rawX - mCenterPointX, 2) + Math.pow(rawY - mCenterPointY, 2));
+        float rawDistance = (float) Math.sqrt(Math.pow(rawX - mCenterPointX, 2) + Math.pow(rawY - mCenterPointY, 2));
         // get max radius of this context
         float maxRadius = Math.min(Math.min(mCenterPointX, mDrawableWidth - mCenterPointX), Math.min(mCenterPointY, mDrawableHeight - mCenterPointY));
-        if (rawDistance <= maxRadius && rawDistance >= 30) {
-            if (mRadius < maxRadius && mRadius > 30) {
-                mRadius = (float) rawDistance;
+        if (rawDistance <= maxRadius && rawDistance >= MIN_CIRCLE_WINDOW_RADIUS) {
+            if (mRadius < maxRadius && mRadius > MIN_CIRCLE_WINDOW_RADIUS) {
+                mRadius = rawDistance;
             } else if (mRadius == maxRadius) {
                 // only scale in can be done
-                if (lastX > mCenterPointX && lastY < mCenterPointY) {
+                if (lastX > mCenterPointX && lastY < mCenterPointY && (rawX < lastX || rawY > lastY)) {
                     // touch point at top right
-                    if (rawX < lastX || rawY > lastY) {
-                        mRadius = (float) rawDistance;
-                    }
+                    mRadius = rawDistance;
                 }
-                if (lastX > mCenterPointX && lastY > mCenterPointY) {
+                if (lastX > mCenterPointX && lastY > mCenterPointY && (rawX < lastX || rawY < lastY)) {
                     // touch point at bottom right
-                    if (rawX < lastX || rawY < lastY) {
-                        mRadius = (float) rawDistance;
-                    }
+                    mRadius = rawDistance;
                 }
-                if (lastX < mCenterPointX && lastY < mCenterPointY) {
+                if (lastX < mCenterPointX && lastY < mCenterPointY && (rawX > lastX || rawY > lastY)) {
                     // touch point at top left
-                    if (rawX > lastX || rawY > lastY) {
-                        mRadius = (float) rawDistance;
-                    }
+                    mRadius = rawDistance;
                 }
-                if (lastX < mCenterPointX && lastY > mCenterPointY) {
+                if (lastX < mCenterPointX && lastY > mCenterPointY && (rawX > lastX || rawY < lastY)) {
                     // touch point at bottom left
-                    if (rawX > lastX || rawY < lastY) {
-                        mRadius = (float) rawDistance;
-                    }
+                    mRadius = rawDistance;
                 }
-            } else if (mRadius == 30) {
+            } else if (mRadius == MIN_CIRCLE_WINDOW_RADIUS) {
                 // only scale out can be done
-                if (lastX > mCenterPointX && lastY < mCenterPointY) {
+                if (lastX > mCenterPointX && lastY < mCenterPointY && (rawX > lastX || rawY < lastY)) {
                     // touch point at top right
-                    if (rawX > lastX || rawY < lastY) {
-                        mRadius = (float) rawDistance;
-                    }
+                    mRadius = rawDistance;
                 }
-                if (lastX > mCenterPointX && lastY > mCenterPointY) {
+                if (lastX > mCenterPointX && lastY > mCenterPointY && (rawX > lastX || rawY > lastY)) {
                     // touch point at bottom right
-                    if (rawX > lastX || rawY > lastY) {
-                        mRadius = (float) rawDistance;
-                    }
+                    mRadius = rawDistance;
                 }
-                if (lastX < mCenterPointX && lastY < mCenterPointY) {
+                if (lastX < mCenterPointX && lastY < mCenterPointY && (rawX < lastX || rawY < lastY)) {
                     // touch point at top left
-                    if (rawX < lastX || rawY < lastY) {
-                        mRadius = (float) rawDistance;
-                    }
+                    mRadius = rawDistance;
                 }
-                if (lastX < mCenterPointX && lastY > mCenterPointY) {
+                if (lastX < mCenterPointX && lastY > mCenterPointY && (rawX < lastX || rawY > lastY)) {
                     // touch point at bottom left
-                    if (rawX < lastX || rawY > lastY) {
-                        mRadius = (float) rawDistance;
-                    }
+                    mRadius = rawDistance;
                 }
             }
         }
