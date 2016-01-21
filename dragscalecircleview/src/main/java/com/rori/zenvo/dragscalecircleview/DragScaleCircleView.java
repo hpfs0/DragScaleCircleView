@@ -333,13 +333,17 @@ public class DragScaleCircleView extends ImageView {
      * Initialization obtain the screen width and height.
      */
     protected void init(@NonNull Context context, @Nullable AttributeSet attrs) {
+        // custom attr
         final TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.DragScaleCircleView);
-        mHasGuideLine = typedArray.getBoolean(R.styleable.DragScaleCircleView_hasGuideLine, true);
-        mGuideLineSize = typedArray.getFloat(R.styleable.DragScaleCircleView_guideLineSize, getResources().getDimension(R.dimen.guideline_width));
-        mGuideLineColor = typedArray.getInt(R.styleable.DragScaleCircleView_guideLineColor, getResources().getColor(R.color.guideline));
-        mBorderSize = typedArray.getFloat(R.styleable.DragScaleCircleView_borderSize, getResources().getDimension(R.dimen.border_width));
-        mBorderColor = typedArray.getInt(R.styleable.DragScaleCircleView_borderColor, getResources().getColor(R.color.border));
-        typedArray.recycle();
+        try {
+            mHasGuideLine = typedArray.getBoolean(R.styleable.DragScaleCircleView_hasGuideLine, true);
+            mGuideLineSize = typedArray.getFloat(R.styleable.DragScaleCircleView_guideLineSize, getResources().getDimension(R.dimen.guideline_width));
+            mGuideLineColor = typedArray.getInt(R.styleable.DragScaleCircleView_guideLineColor, getResources().getColor(R.color.guideline));
+            mBorderSize = typedArray.getFloat(R.styleable.DragScaleCircleView_borderSize, getResources().getDimension(R.dimen.border_width));
+            mBorderColor = typedArray.getInt(R.styleable.DragScaleCircleView_borderColor, getResources().getColor(R.color.border));
+        } finally {
+            typedArray.recycle();
+        }
 
         final Resources resources = context.getResources();
         mScreenWidth = resources.getDisplayMetrics().widthPixels;
@@ -466,26 +470,18 @@ public class DragScaleCircleView extends ImageView {
         // top left
         float topLeftPointX = mCenterPointX - offset;
         float topLeftPointY = mCenterPointY - offset;
-
         // top right
         float topRightPointX = mCenterPointX + offset;
-        float topRightPointY = topLeftPointY;
-
         // bottom left
-        float bottomLeftPointX = topLeftPointX;
         float bottomLeftPointY = mCenterPointY + offset;
 
-        // bottom right
-        float bottomRightPointX = topRightPointX;
-        float bottomRightPointY = bottomLeftPointY;
-
-        canvas.drawLine(topLeftPointX, topLeftPointY, topRightPointX, topRightPointY, mGuideLinePaint);
+        canvas.drawLine(topLeftPointX, topLeftPointY, topRightPointX, topLeftPointY, mGuideLinePaint);
         canvas.drawLine(mCenterPointX - mRadius, mCenterPointY, mCenterPointX + mRadius, mCenterPointY, mGuideLinePaint);
-        canvas.drawLine(bottomLeftPointX, bottomLeftPointY, bottomRightPointX, bottomRightPointY, mGuideLinePaint);
+        canvas.drawLine(topLeftPointX, bottomLeftPointY, topRightPointX, bottomLeftPointY, mGuideLinePaint);
 
-        canvas.drawLine(topLeftPointX, topLeftPointY, bottomLeftPointX, bottomLeftPointY, mGuideLinePaint);
+        canvas.drawLine(topLeftPointX, topLeftPointY, topLeftPointX, bottomLeftPointY, mGuideLinePaint);
         canvas.drawLine(mCenterPointX, mCenterPointY - mRadius, mCenterPointX, mCenterPointY + mRadius, mGuideLinePaint);
-        canvas.drawLine(topRightPointX, topRightPointY, bottomRightPointX, bottomRightPointY, mGuideLinePaint);
+        canvas.drawLine(topRightPointX, topLeftPointY, topRightPointX, bottomLeftPointY, mGuideLinePaint);
 
     }
 
@@ -502,6 +498,7 @@ public class DragScaleCircleView extends ImageView {
         if (d >= mRadius - mOffset / 2.0f && d <= mRadius + mOffset / 2.0f) {
             return SIDE;
         }
+        // touch point at the circle center
         if (d < mRadius - mOffset / 2.0f) {
             return CENTER;
         }
@@ -557,7 +554,9 @@ public class DragScaleCircleView extends ImageView {
     }
 
     /**
-     * gets the bounding rectangle of the bitmap within the ImageView.
+     * Gets the bounding rectangle of the bitmap within the imageView.
+     *
+     * @return rect of the bitmap within the imageView
      */
     private RectF getBitmapRect() {
 
@@ -570,19 +569,20 @@ public class DragScaleCircleView extends ImageView {
         final Bitmap src = ((BitmapDrawable) getDrawable()).getBitmap();
 
         if (drawable.getBounds().right > mScreenWidth) {
-            float scale = mScreenWidth / drawable.getBounds().right;
+            final float scale = mScreenWidth / drawable.getBounds().right;
             Matrix matrix = new Matrix();
             matrix.postScale(scale, scale);
             setImageBitmap(Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true));
+        } else if (drawable.getBounds().bottom > mScreenHeight) {
+            // TODO
         }
 
         // Calculate the dimensions as seen on screen.
-        final int drawableDisplayWidth = ((BitmapDrawable) getDrawable()).getBitmap().getWidth();
-        final int drawableDisplayHeight = ((BitmapDrawable) getDrawable()).getBitmap().getHeight();
+        final int drawableDisplayWidth = src.getWidth();
+        final int drawableDisplayHeight = src.getHeight();
 
         // Get the Rect of the displayed image within the ImageView.
-        final float left = 0;
-        final float top = 0;
+        final float left = 0, top = 0;
         final float right = left + drawableDisplayWidth;
         final float bottom = top + drawableDisplayHeight;
 
@@ -590,22 +590,16 @@ public class DragScaleCircleView extends ImageView {
     }
 
     /**
-     * move the circle view.
+     * Move the circle view.
      *
      * @param dx move X
      * @param dy move Y
      */
     private void center(int dx, int dy) {
-        if (mCenterPointX + dx - mRadius < 0) {
-            return;
-        }
-        if (Math.min(mDrawableWidth, mScreenWidth) - (mCenterPointX + dx + mRadius) < 0) {
-            return;
-        }
-        if (mCenterPointY + dy - mRadius < 0) {
-            return;
-        }
-        if (Math.min(mDrawableHeight, mScreenHeight) - (mCenterPointY + dy + mRadius) < 0) {
+        if ((mCenterPointX + dx - mRadius < 0)
+                || (mCenterPointY + dy - mRadius < 0)
+                || (Math.min(mDrawableWidth, mScreenWidth) - (mCenterPointX + dx + mRadius) < 0)
+                || (Math.min(mDrawableHeight, mScreenHeight) - (mCenterPointY + dy + mRadius) < 0)) {
             return;
         }
         mCenterPointX += dx;
@@ -613,7 +607,7 @@ public class DragScaleCircleView extends ImageView {
     }
 
     /**
-     * touch on side scale in or out process.
+     * Touch on side scale in or out process.
      *
      * @param lastX touch point X
      * @param lastY touch point Y
@@ -629,43 +623,18 @@ public class DragScaleCircleView extends ImageView {
             if (mRadius < maxRadius && mRadius > MIN_CIRCLE_WINDOW_RADIUS) {
                 mRadius = rawDistance;
             } else if (mRadius == maxRadius) {
-                // only scale in can be done
-                if (lastX > mCenterPointX && lastY < mCenterPointY && (rawX < lastX || rawY > lastY)) {
-                    // touch point at top right
-                    mRadius = rawDistance;
-                }
-                if (lastX > mCenterPointX && lastY > mCenterPointY && (rawX < lastX || rawY < lastY)) {
-                    // touch point at bottom right
-                    mRadius = rawDistance;
-                }
-                if (lastX < mCenterPointX && lastY < mCenterPointY && (rawX > lastX || rawY > lastY)) {
-                    // touch point at top left
-                    mRadius = rawDistance;
-                }
-                if (lastX < mCenterPointX && lastY > mCenterPointY && (rawX > lastX || rawY < lastY)) {
-                    // touch point at bottom left
+                // only scale in can be done.(touch point at top/bottom right || top/bottom left)
+                if ((lastX > mCenterPointX && lastY != mCenterPointY && (rawX < lastX || rawY != lastY))
+                        || lastX < mCenterPointX && lastY != mCenterPointY && (rawX > lastX || rawY != lastY)) {
                     mRadius = rawDistance;
                 }
             } else if (mRadius == MIN_CIRCLE_WINDOW_RADIUS) {
-                // only scale out can be done
-                if (lastX > mCenterPointX && lastY < mCenterPointY && (rawX > lastX || rawY < lastY)) {
-                    // touch point at top right
-                    mRadius = rawDistance;
-                }
-                if (lastX > mCenterPointX && lastY > mCenterPointY && (rawX > lastX || rawY > lastY)) {
-                    // touch point at bottom right
-                    mRadius = rawDistance;
-                }
-                if (lastX < mCenterPointX && lastY < mCenterPointY && (rawX < lastX || rawY < lastY)) {
-                    // touch point at top left
-                    mRadius = rawDistance;
-                }
-                if (lastX < mCenterPointX && lastY > mCenterPointY && (rawX < lastX || rawY > lastY)) {
-                    // touch point at bottom left
+                // only scale out can be done.(touch point at top/bottom right || top/bottom right)
+                if ((lastX > mCenterPointX && lastY != mCenterPointY && (rawX > lastX || rawY != lastY))
+                        || lastX < mCenterPointX && lastY != mCenterPointY && (rawX < lastX || rawY != lastY)) {
                     mRadius = rawDistance;
                 }
             }
         }
     }
-
 }
