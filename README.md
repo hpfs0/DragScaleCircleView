@@ -1,4 +1,6 @@
 # DragScaleCircleView
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-DragScaleCircleView-brightgreen.svg?style=flat)](http://android-arsenal.com/details/1/2966)
+
 A custom imageview that provides the circle window can be dragged and scaled, crop image. 
 
 ## How does it look?
