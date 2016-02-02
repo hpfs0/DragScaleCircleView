@@ -39,7 +39,7 @@ If you want to guideline don't shown, please define the <code>xmlns:app="http://
 | guideLineSize | float |set the size of circle window's guide line
 | guideLineColor | integer |set the color of circle window's guide line
 | borderSize | float |set the size of circle window's border line
-| borderColor | set the color of circle window's border line
+| borderColor | integer |set the color of circle window's border line
 
 ## Download
 The latest version can be downloaded as a zip and referenced by your application as a library project.
