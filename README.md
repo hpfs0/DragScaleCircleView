@@ -33,30 +33,13 @@ To add the DragScaleCircleView to your application, specify com.rori.zenvo.drags
 The default dragScaleCircleView to show the guideline.
 If you want to guideline don't shown, please define the <code>xmlns:app="http://schemas.android.com/apk/res-auto"</code> on your layout file.
 
-custom attrs:
-
-<code>app:hasGuideLine</code> : When drag the circle window's guide line diplay/not display flag.
-
-<code>app:guideLineSize</code> : The size of circle window's guide line.
-
-<code>app:guideLineColor</code> : The color of circle window's guide line.
-
-<code>app:borderSize</code> : The size of circle window's border line.
-
-<code>app:borderColor</code> : The color of circle window's border line.
-
-Just like blew.
-
-```xml
-    <com.rori.zenvo.dragscalecircleview.DragScaleCircleView
-        android:id="@+id/dragScaleCircleView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        dragscalecircleview:hasGuideLine="false"
-        android:clickable="true"
-        android:src="@drawable/img1"/>
-```
+|name|format|description|
+|:---:|:---:|:---:|
+| hasGuideLine | boolean |set the flag of circle window's guide line diplay/not display
+| guideLineSize | float |set the size of circle window's guide line
+| guideLineColor | integer |set the color of circle window's guide line
+| borderSize | float |set the size of circle window's border line
+| borderColor | set the color of circle window's border line
 
 ## Download
 The latest version can be downloaded as a zip and referenced by your application as a library project.
