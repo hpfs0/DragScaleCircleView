@@ -1,5 +1,5 @@
 /**
- * Copyright 2015, Zenvo, Inc.
+ * Copyright 2015~2016, hpfs0.
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License.
  * You may obtain a copy of the License in the LICENSE file, or at:
@@ -85,10 +85,9 @@ public class DragScaleCircleView extends ImageView {
     // The direction that drag center the circle view.
     private static final int CENTER = 0x20;
 
+    /* The mode of touch. */
     private static final int HANDLE_DOWN = (1 << 0);
-
     private static final int HANDLE_MOVE = (1 << 1);
-
     private static final int HANDLE_UP = (1 << 2);
 
     // The bounding box around the bitmap that it can be cropped.
@@ -112,12 +111,6 @@ public class DragScaleCircleView extends ImageView {
 
     // The Handle mode.
     private int mHandleMode;
-
-    // The bitmap used to make surrounding area.
-    private Bitmap mBitmap;
-
-    // The canvas used to load bitmap.
-    private Canvas mCanvas;
 
     // -------------------------------------------------------------
     //                       custom style
@@ -163,17 +156,17 @@ public class DragScaleCircleView extends ImageView {
      *
      * @return mHasGuideLine
      */
-    public Boolean getmHasGuideLine() {
+    public Boolean getHasGuideLine() {
         return mHasGuideLine;
     }
 
     /**
      * Set the value of global mHasGuideLine.
      *
-     * @param mHasGuideLine
+     * @param hasGuideLine
      */
-    public void setmHasGuideLine(Boolean mHasGuideLine) {
-        this.mHasGuideLine = mHasGuideLine;
+    public void setHasGuideLine(Boolean hasGuideLine) {
+        this.mHasGuideLine = hasGuideLine;
     }
 
     /**
@@ -181,17 +174,17 @@ public class DragScaleCircleView extends ImageView {
      *
      * @return mGuideLineSize
      */
-    public float getmGuideLineSize() {
+    public float getGuideLineSize() {
         return mGuideLineSize;
     }
 
     /**
      * Set the value of global mGuideLineSize.
      *
-     * @param mGuideLineSize
+     * @param guideLineSize
      */
-    public void setmGuideLineSize(float mGuideLineSize) {
-        this.mGuideLineSize = mGuideLineSize;
+    public void setGuideLineSize(float guideLineSize) {
+        this.mGuideLineSize = guideLineSize;
     }
 
     /**
@@ -199,17 +192,17 @@ public class DragScaleCircleView extends ImageView {
      *
      * @return
      */
-    public int getmGuideLineColor() {
+    public int getGuideLineColor() {
         return mGuideLineColor;
     }
 
     /**
      * Set the value of global mGuideLineColor.
      *
-     * @param mGuideLineColor
+     * @param guideLineColor
      */
-    public void setmGuideLineColor(int mGuideLineColor) {
-        this.mGuideLineColor = mGuideLineColor;
+    public void setGuideLineColor(int guideLineColor) {
+        this.mGuideLineColor = guideLineColor;
     }
 
     /**
@@ -217,17 +210,17 @@ public class DragScaleCircleView extends ImageView {
      *
      * @return mBorderSize
      */
-    public float getmBorderSize() {
+    public float getBorderSize() {
         return mBorderSize;
     }
 
     /**
      * Set the value of global mBorderSize.
      *
-     * @param mBorderSize
+     * @param borderSize
      */
-    public void setmBorderSize(float mBorderSize) {
-        this.mBorderSize = mBorderSize;
+    public void setBorderSize(float borderSize) {
+        this.mBorderSize = borderSize;
     }
 
     /**
@@ -235,17 +228,17 @@ public class DragScaleCircleView extends ImageView {
      *
      * @return mBorderColor
      */
-    public int getmBorderColor() {
+    public int getBorderColor() {
         return mBorderColor;
     }
 
     /**
      * Set the value of global mBorderColor.
      *
-     * @param mBorderColor
+     * @param borderColor
      */
-    public void setmBorderColor(int mBorderColor) {
-        this.mBorderColor = mBorderColor;
+    public void setBorderColor(int borderColor) {
+        this.mBorderColor = borderColor;
     }
 
     /**
@@ -255,6 +248,25 @@ public class DragScaleCircleView extends ImageView {
      */
     public void setGuideLinePaintColor(int color) {
         this.mGuideLinePaint.setColor(color);
+    }
+
+    /**
+     * Set the width of guide line
+     *
+     * @param width width
+     */
+    public void setGuideLineStrokeWidth(int width) {
+        this.mGuideLinePaint.setStrokeWidth(width);
+    }
+
+    /**
+     * Set the color of border paint
+     *
+     * @param color color
+     */
+    public void setBorderPaintColor(int color) {
+        this.mBoarderPaint.setColor(color);
+        invalidate();
     }
 
     /**
@@ -280,10 +292,10 @@ public class DragScaleCircleView extends ImageView {
         final Rect rectSrc = new Rect();
         rectSrc.set((int) croppedRect.left, (int) croppedRect.top, (int) croppedRect.right, (int) croppedRect.bottom);
 
-        int dstImageSize = rectSrc.width();
-        final Rect rectDst = new Rect(0, 0, dstImageSize, dstImageSize);
+        float dstImageSize = rectSrc.width();
+        final RectF rectDst = new RectF(0, 0, dstImageSize, dstImageSize);
         float dstRect = dstImageSize / 2.0f;
-        Bitmap outputBitmap = Bitmap.createBitmap(dstImageSize, dstImageSize, Bitmap.Config.ARGB_8888);
+        Bitmap outputBitmap = Bitmap.createBitmap((int) dstImageSize, (int) dstImageSize, Bitmap.Config.ARGB_8888);
 
         Canvas mCanvas = new Canvas(outputBitmap);
         mCanvas.drawARGB(0, 255, 255, 255);
@@ -452,12 +464,12 @@ public class DragScaleCircleView extends ImageView {
      * @param canvas canvas
      */
     private void drawDarkenSurroundingArea(@NonNull Canvas canvas) {
-        mBitmap = Bitmap.createBitmap(canvas.getWidth(), (canvas.getHeight()), Bitmap.Config.ARGB_8888);
-        mBitmap.eraseColor(Color.TRANSPARENT);
-        mCanvas = new Canvas(mBitmap);
-        mCanvas.drawColor(getResources().getColor(R.color.surrounding_area));
-        mCanvas.drawCircle(mCenterPointX, mCenterPointY, mRadius, mSurroundingAreaOverlayPaint);
-        canvas.drawBitmap(mBitmap, 0, 0, null);
+        Bitmap bitmap = Bitmap.createBitmap(canvas.getWidth(), (canvas.getHeight()), Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(Color.TRANSPARENT);
+        Canvas canvas1 = new Canvas(bitmap);
+        canvas1.drawColor(getResources().getColor(R.color.surrounding_area));
+        canvas1.drawCircle(mCenterPointX, mCenterPointY, mRadius, mSurroundingAreaOverlayPaint);
+        canvas.drawBitmap(bitmap, 0, 0, null);
     }
 
     /**
@@ -465,14 +477,12 @@ public class DragScaleCircleView extends ImageView {
      *
      * @param canvas canvas
      */
-    private void drawGuideLine(Canvas canvas) {
+    private void drawGuideLine(@NonNull Canvas canvas) {
         float offset = (float) Math.sqrt(Math.pow(mRadius, 2) / 2.0f);
-        // top left
+
         float topLeftPointX = mCenterPointX - offset;
         float topLeftPointY = mCenterPointY - offset;
-        // top right
         float topRightPointX = mCenterPointX + offset;
-        // bottom left
         float bottomLeftPointY = mCenterPointY + offset;
 
         canvas.drawLine(topLeftPointX, topLeftPointY, topRightPointX, topLeftPointY, mGuideLinePaint);
@@ -482,7 +492,6 @@ public class DragScaleCircleView extends ImageView {
         canvas.drawLine(topLeftPointX, topLeftPointY, topLeftPointX, bottomLeftPointY, mGuideLinePaint);
         canvas.drawLine(mCenterPointX, mCenterPointY - mRadius, mCenterPointX, mCenterPointY + mRadius, mGuideLinePaint);
         canvas.drawLine(topRightPointX, topLeftPointY, topRightPointX, bottomLeftPointY, mGuideLinePaint);
-
     }
 
     /**
@@ -514,10 +523,10 @@ public class DragScaleCircleView extends ImageView {
     protected void drag(MotionEvent event, int action) {
         switch (action) {
             case MotionEvent.ACTION_MOVE:
-                int dx = (int) event.getRawX() - mLastX;
-                int dy = (int) event.getRawY() - mLastY;
-                int touchX = (int) event.getX();
-                int touchY = (int) event.getY();
+                float dx = event.getRawX() - mLastX;
+                float dy = event.getRawY() - mLastY;
+                float touchX = event.getX();
+                float touchY = event.getY();
                 switch (mDragDirection) {
                     case CENTER:
                         center(dx, dy);
@@ -550,7 +559,7 @@ public class DragScaleCircleView extends ImageView {
         mDrawableHeight = bitmapRect.height();
         mCenterPointX = mDrawableWidth / 2.0f;
         mCenterPointY = mDrawableHeight / 2.0f;
-        mRadius = (Math.min(bitmapRect.width(), bitmapRect.height()) - mOffset) / 2.0f;
+        mRadius = (Math.min(mDrawableWidth, mDrawableHeight) - mOffset) / 2.0f;
     }
 
     /**
@@ -566,15 +575,19 @@ public class DragScaleCircleView extends ImageView {
             return new RectF();
         }
 
-        final Bitmap src = ((BitmapDrawable) getDrawable()).getBitmap();
+        final Rect drawableBounds = drawable.getBounds();
+        final Bitmap src = ((BitmapDrawable) drawable).getBitmap();
 
-        if (drawable.getBounds().right > mScreenWidth) {
-            final float scale = mScreenWidth / drawable.getBounds().right;
-            Matrix matrix = new Matrix();
+        if (drawableBounds.right > mScreenWidth) {
+            final float scale = mScreenWidth / drawableBounds.right;
+            final Matrix matrix = new Matrix();
             matrix.postScale(scale, scale);
             setImageBitmap(Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true));
         } else if (drawable.getBounds().bottom > mScreenHeight) {
-            // TODO
+            final float scale = mScreenHeight / drawableBounds.bottom;
+            final Matrix matrix = new Matrix();
+            matrix.postScale(scale, scale);
+            setImageBitmap(Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight(), matrix, true));
         }
 
         // Calculate the dimensions as seen on screen.
@@ -595,7 +608,7 @@ public class DragScaleCircleView extends ImageView {
      * @param dx move X
      * @param dy move Y
      */
-    private void center(int dx, int dy) {
+    private void center(float dx, float dy) {
         if ((mCenterPointX + dx - mRadius < 0)
                 || (mCenterPointY + dy - mRadius < 0)
                 || (Math.min(mDrawableWidth, mScreenWidth) - (mCenterPointX + dx + mRadius) < 0)
@@ -614,7 +627,7 @@ public class DragScaleCircleView extends ImageView {
      * @param rawX  touch move point X
      * @param rawY  touch move point Y
      */
-    private void side(int lastX, int lastY, int rawX, int rawY) {
+    private void side(float lastX, float lastY, float rawX, float rawY) {
         // action_up: the touch point to the distance of the center on action up
         float rawDistance = (float) Math.sqrt(Math.pow(rawX - mCenterPointX, 2) + Math.pow(rawY - mCenterPointY, 2));
         // get max radius of this context
