@@ -130,6 +130,10 @@ public class DragScaleCircleView extends ImageView {
     // The custom attr tha circle window border color..
     private int mBorderColor;
 
+    // the mask tools to draw the semitransparent mask
+    private Bitmap maskBitmap;
+    private Canvas maskCanvas;
+
     // -------------------------------------------------------------
     //                       constructor
     // -------------------------------------------------------------
@@ -374,6 +378,15 @@ public class DragScaleCircleView extends ImageView {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+        maskBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+        maskCanvas = new Canvas(maskBitmap);
+    }
+
+
+    @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
 
@@ -464,12 +477,10 @@ public class DragScaleCircleView extends ImageView {
      * @param canvas canvas
      */
     private void drawDarkenSurroundingArea(@NonNull Canvas canvas) {
-        Bitmap bitmap = Bitmap.createBitmap(canvas.getWidth(), (canvas.getHeight()), Bitmap.Config.ARGB_8888);
-        bitmap.eraseColor(Color.TRANSPARENT);
-        Canvas canvas1 = new Canvas(bitmap);
-        canvas1.drawColor(getResources().getColor(R.color.surrounding_area));
-        canvas1.drawCircle(mCenterPointX, mCenterPointY, mRadius, mSurroundingAreaOverlayPaint);
-        canvas.drawBitmap(bitmap, 0, 0, null);
+        maskBitmap.eraseColor(Color.TRANSPARENT);
+        maskCanvas.drawColor(getResources().getColor(R.color.surrounding_area));
+        maskCanvas.drawCircle(mCenterPointX, mCenterPointY, mRadius, mSurroundingAreaOverlayPaint);
+        canvas.drawBitmap(maskBitmap, 0, 0, null); 
     }
 
     /**
