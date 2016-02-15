@@ -18,7 +18,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/dragScaleCircleView">
+        android:layout_below="@id/dragScaleCircleView"
+        android:background="#ebebeb">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -57,47 +58,23 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="10dp"
                         android:gravity="center_vertical"
                         android:text="GuideLine Color" />
 
-                    <ImageView
-                        android:id="@+id/guideLineColor1"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_red_light" />
-
-                    <ImageView
-                        android:id="@+id/guideLineColor2"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_green_light" />
-
-                    <ImageView
-                        android:id="@+id/guideLineColor3"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_purple" />
-
-                    <ImageView
-                        android:id="@+id/guideLineColor4"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_blue_light" />
-
-                    <ImageView
-                        android:id="@+id/guideLineColor5"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_orange_light" />
+                    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                        android:id="@+id/guideLineColorSeek"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:progress="1"
+                        app:dsb_max="5"
+                        app:dsb_progressColor="@color/border"
+                        app:dsb_indicatorColor="@color/border" />
 
                 </LinearLayout>
 
@@ -107,8 +84,9 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="10dp"
                         android:gravity="center_vertical"
@@ -116,8 +94,9 @@
 
                     <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
                         android:id="@+id/guideLineSizeSeek"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="2"
                         android:progress="1"
                         app:dsb_max="8" />
 
@@ -129,48 +108,23 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_gravity="center_vertical"
                         android:layout_marginRight="10dp"
                         android:gravity="center_vertical"
                         android:text="Border Color" />
 
-                    <ImageView
-                        android:id="@+id/borderColor1"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginLeft="23dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_red_light" />
-
-                    <ImageView
-                        android:id="@+id/borderColor2"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_green_light" />
-
-                    <ImageView
-                        android:id="@+id/borderColor3"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_purple" />
-
-                    <ImageView
-                        android:id="@+id/borderColor4"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_blue_light" />
-
-                    <ImageView
-                        android:id="@+id/borderColor5"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginRight="3dp"
-                        android:background="@android:color/holo_orange_light" />
+                    <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                        android:id="@+id/borderColorSeek"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:progress="1"
+                        app:dsb_max="5"
+                        app:dsb_progressColor="@color/border"
+                        app:dsb_indicatorColor="@color/border" />
 
                 </LinearLayout>
 

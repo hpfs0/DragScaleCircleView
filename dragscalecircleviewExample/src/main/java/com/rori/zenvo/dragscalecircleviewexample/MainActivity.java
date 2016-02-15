@@ -27,6 +27,8 @@ import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,39 +38,23 @@ public class MainActivity extends AppCompatActivity {
     DragScaleCircleView mDragScaleCircleView;
     Switch guideLineSwitch;
     Button getCroppedImage;
-    DiscreteSeekBar guideLineSizeSeek;
-    ImageView croppedImage, guideLineColor1, guideLineColor2, guideLineColor3, guideLineColor4, guideLineColor5,
-            borderColor1, borderColor2, borderColor3, borderColor4, borderColor5;
+    DiscreteSeekBar guideLineSizeSeek, guideLineColorSeek, borderColorSeek;
+    ImageView croppedImage, borderColor1, borderColor2, borderColor3, borderColor4, borderColor5;
     float touchX, touchY;
+    List<Integer> colors = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDragScaleCircleView = (DragScaleCircleView) findViewById(R.id.dragScaleCircleView);
-        guideLineColor1 = (ImageView) findViewById(R.id.guideLineColor1);
-        guideLineColor2 = (ImageView) findViewById(R.id.guideLineColor2);
-        guideLineColor3 = (ImageView) findViewById(R.id.guideLineColor3);
-        guideLineColor4 = (ImageView) findViewById(R.id.guideLineColor4);
-        guideLineColor5 = (ImageView) findViewById(R.id.guideLineColor5);
 
-        borderColor1 = (ImageView) findViewById(R.id.borderColor1);
-        borderColor2 = (ImageView) findViewById(R.id.borderColor2);
-        borderColor3 = (ImageView) findViewById(R.id.borderColor3);
-        borderColor4 = (ImageView) findViewById(R.id.borderColor4);
-        borderColor5 = (ImageView) findViewById(R.id.borderColor5);
-
-        setGuideLineColor(guideLineColor1);
-        setGuideLineColor(guideLineColor2);
-        setGuideLineColor(guideLineColor3);
-        setGuideLineColor(guideLineColor4);
-        setGuideLineColor(guideLineColor5);
-
-        setBorderColor(borderColor1);
-        setBorderColor(borderColor2);
-        setBorderColor(borderColor3);
-        setBorderColor(borderColor4);
-        setBorderColor(borderColor5);
+        colors.add(getResources().getColor(R.color.border));
+        colors.add(getResources().getColor(android.R.color.holo_red_light));
+        colors.add(getResources().getColor(android.R.color.holo_green_light));
+        colors.add(getResources().getColor(android.R.color.holo_purple));
+        colors.add(getResources().getColor(android.R.color.holo_blue_light));
+        colors.add(getResources().getColor(android.R.color.holo_orange_light));
 
         guideLineSwitch = (Switch) findViewById(R.id.guideLineSwitch);
         guideLineSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -138,6 +124,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        guideLineColorSeek = (DiscreteSeekBar) findViewById(R.id.guideLineColorSeek);
+        guideLineColorSeek.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                int selectedColor = colors.get(value);
+                guideLineColorSeek.setThumbColor(selectedColor, selectedColor);
+                guideLineColorSeek.setScrubberColor(selectedColor);
+                setGuideLineColor(selectedColor);
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+
+            }
+        });
+
         guideLineSizeSeek = (DiscreteSeekBar) findViewById(R.id.guideLineSizeSeek);
         guideLineSizeSeek.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
@@ -155,24 +162,35 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-    }
 
-    private void setGuideLineColor(final ImageView target) {
-        target.setOnClickListener(new View.OnClickListener() {
+        borderColorSeek = (DiscreteSeekBar) findViewById(R.id.borderColorSeek);
+        borderColorSeek.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
-            public void onClick(View v) {
-                mDragScaleCircleView.setGuideLinePaintColor(((ColorDrawable) target.getBackground()).getColor());
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                int selectedColor = colors.get(value);
+                borderColorSeek.setThumbColor(selectedColor, selectedColor);
+                borderColorSeek.setScrubberColor(selectedColor);
+                setBorderColor(selectedColor);
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+
             }
         });
     }
 
-    private void setBorderColor(final ImageView target) {
-        target.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDragScaleCircleView.setBorderPaintColor(((ColorDrawable) target.getBackground()).getColor());
-            }
-        });
+    private void setGuideLineColor(int color) {
+        mDragScaleCircleView.setGuideLinePaintColor(color);
+    }
+
+    private void setBorderColor(int color) {
+        mDragScaleCircleView.setBorderPaintColor(color);
     }
 
     private void showDialog(final Drawable drawable) {
@@ -185,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
         dialog.setView(dialogLayout);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setWindowAnimations(R.style.DialogTheme);;
+        dialog.getWindow().setWindowAnimations(R.style.DialogTheme);
         dialog.show();
     }
 
