@@ -302,7 +302,6 @@ public class DragScaleCircleView extends ImageView {
         Bitmap outputBitmap = Bitmap.createBitmap((int) dstImageSize, (int) dstImageSize, Bitmap.Config.ARGB_8888);
 
         Canvas mCanvas = new Canvas(outputBitmap);
-        mCanvas.drawARGB(0, 255, 255, 255);
         mCanvas.drawCircle(dstRect, dstRect, dstRect, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         mCanvas.drawBitmap(bitmap, rectSrc, rectDst, paint);
@@ -333,11 +332,11 @@ public class DragScaleCircleView extends ImageView {
      * @return rect for cropped part of image
      */
     private RectF getCroppedRect() {
-        float x1 = mCenterPointX - mRadius;
-        float y1 = mCenterPointY - mRadius;
-        float x2 = mCenterPointX + mRadius;
-        float y2 = mCenterPointY + mRadius;
-        return new RectF(x1, y1, x2, y2);
+        float left = mCenterPointX - mRadius;
+        float top = mCenterPointY - mRadius;
+        float right = mCenterPointX + mRadius;
+        float bottom = mCenterPointY + mRadius;
+        return new RectF(left, top, right, bottom);
     }
 
     @Override
@@ -370,11 +369,11 @@ public class DragScaleCircleView extends ImageView {
         } else {
             mScreenHeight = getResources().getDisplayMetrics().heightPixels - 40;
         }
-        mBoarderPaint = PaintUtil.newBoarderPaint(resources, mBorderSize, mBorderColor);
-        mSurroundingAreaOverlayPaint = PaintUtil.newSurroundingAreaOverlayPaint(resources);
+        mBoarderPaint = PaintUtil.newBoarderPaint(mBorderSize, mBorderColor);
+        mSurroundingAreaOverlayPaint = PaintUtil.newSurroundingAreaOverlayPaint();
         mHandlePaint = PaintUtil.newHandlerPaint(resources);
         mHandleRadius = resources.getDimension(R.dimen.corner_width);
-        mGuideLinePaint = PaintUtil.newGuideLinePaint(resources, mGuideLineSize, mGuideLineColor);
+        mGuideLinePaint = PaintUtil.newGuideLinePaint(mGuideLineSize, mGuideLineColor);
     }
 
     @Override
@@ -477,7 +476,7 @@ public class DragScaleCircleView extends ImageView {
      * @param canvas canvas
      */
     private void drawDarkenSurroundingArea(@NonNull Canvas canvas) {
-        maskBitmap.eraseColor(Color.TRANSPARENT);
+        maskCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         maskCanvas.drawColor(getResources().getColor(R.color.surrounding_area));
         maskCanvas.drawCircle(mCenterPointX, mCenterPointY, mRadius, mSurroundingAreaOverlayPaint);
         canvas.drawBitmap(maskBitmap, 0, 0, null); 
@@ -489,7 +488,7 @@ public class DragScaleCircleView extends ImageView {
      * @param canvas canvas
      */
     private void drawGuideLine(@NonNull Canvas canvas) {
-        float offset = (float) Math.sqrt(Math.pow(mRadius, 2) / 2.0f);
+        float offset = (float) (mRadius / Math.sqrt(2));
 
         float topLeftPointX = mCenterPointX - offset;
         float topLeftPointY = mCenterPointY - offset;
