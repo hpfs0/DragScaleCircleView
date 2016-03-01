@@ -1,5 +1,7 @@
 package com.rori.zenvo.dragscalecircleviewexample;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -8,6 +10,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -19,6 +23,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.rori.zenvo.dragscalecircleview.DragScaleCircleView;
 
@@ -35,13 +40,13 @@ public class MainActivity extends AppCompatActivity {
     private static final String CAMERA_PATH = "/DCIM/Camera";
     private static final String CAMERA_CROP_IMAGE_PATH = "/DCIM/Camera/crop_image.jpg";
 
-    DragScaleCircleView mDragScaleCircleView;
-    Switch guideLineSwitch;
-    Button getCroppedImage;
-    DiscreteSeekBar guideLineSizeSeek, guideLineColorSeek, borderColorSeek;
-    ImageView croppedImage, borderColor1, borderColor2, borderColor3, borderColor4, borderColor5;
-    float touchX, touchY;
-    List<Integer> colors = new ArrayList<>();
+    private static final int REQUEST_CODE_LOAD_IMAGE = 123;
+    private static final int REQUEST_CODE_SAVE_IMAGE = 124;
+
+    private DragScaleCircleView mDragScaleCircleView;
+    private DiscreteSeekBar guideLineSizeSeek, guideLineColorSeek, borderColorSeek;
+    private ImageView croppedImage;
+    private List<Integer> colors = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +54,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mDragScaleCircleView = (DragScaleCircleView) findViewById(R.id.dragScaleCircleView);
 
-        colors.add(getResources().getColor(R.color.border));
-        colors.add(getResources().getColor(android.R.color.holo_red_light));
-        colors.add(getResources().getColor(android.R.color.holo_green_light));
-        colors.add(getResources().getColor(android.R.color.holo_purple));
-        colors.add(getResources().getColor(android.R.color.holo_blue_light));
-        colors.add(getResources().getColor(android.R.color.holo_orange_light));
 
-        guideLineSwitch = (Switch) findViewById(R.id.guideLineSwitch);
+        colors.add(ContextCompat.getColor(this, R.color.border));
+        colors.add(ContextCompat.getColor(this, android.R.color.holo_red_light));
+        colors.add(ContextCompat.getColor(this, android.R.color.holo_green_light));
+        colors.add(ContextCompat.getColor(this, android.R.color.holo_purple));
+        colors.add(ContextCompat.getColor(this, android.R.color.holo_blue_light));
+        colors.add(ContextCompat.getColor(this, android.R.color.holo_orange_light));
+
+        Switch guideLineSwitch = (Switch) findViewById(R.id.guideLineSwitch);
         guideLineSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -75,14 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 if (drawable != null) {
                     showDialog(drawable);
                 }
-            }
-        });
-        croppedImage.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                touchX = event.getRawX();
-                touchY = event.getRawY();
-                return false;
             }
         });
         croppedImage.setOnLongClickListener(new View.OnLongClickListener() {
@@ -113,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        getCroppedImage = (Button) findViewById(R.id.getCroppedImage);
+        Button getCroppedImage = (Button) findViewById(R.id.getCroppedImage);
         getCroppedImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -208,36 +206,75 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void saveImage() {
-        Bitmap bitmap = ((BitmapDrawable) croppedImage.getDrawable()).getBitmap();
-        File cameraPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + CAMERA_PATH);
-        if (!cameraPath.exists()) {
-            cameraPath.mkdirs();
-        }
-        File cachePath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + CAMERA_CROP_IMAGE_PATH);
-        FileOutputStream outputStream = null;
-        try {
-            if (cachePath.createNewFile()) {
-                outputStream = new FileOutputStream(cachePath);
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+        if (hasWriteExternalStoragePermission()) {
+            Bitmap bitmap = ((BitmapDrawable) croppedImage.getDrawable()).getBitmap();
+            File cameraPath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + CAMERA_PATH);
+            if (!cameraPath.exists()) {
+                cameraPath.mkdirs();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+            File cachePath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + CAMERA_CROP_IMAGE_PATH);
+            FileOutputStream outputStream = null;
+            try {
+                if (cachePath.createNewFile()) {
+                    outputStream = new FileOutputStream(cachePath);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (outputStream != null) {
+                    try {
+                        outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+        } else {
+            requestWriteExternalStoragePermission(REQUEST_CODE_SAVE_IMAGE);
         }
     }
 
     private void loadImage() {
-        Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getAbsolutePath() + CAMERA_CROP_IMAGE_PATH).copy(Bitmap.Config.ARGB_8888, true);
-        if (bitmap != null) {
-            croppedImage.setImageDrawable(null);
-            croppedImage.setImageBitmap(bitmap);
+        if (hasWriteExternalStoragePermission()) {
+            Bitmap bitmap = BitmapFactory.decodeFile(Environment.getExternalStorageDirectory().getAbsolutePath() + CAMERA_CROP_IMAGE_PATH);
+            if (bitmap != null) {
+                bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                croppedImage.setImageDrawable(null);
+                croppedImage.setImageBitmap(bitmap);
+            } else {
+                Toast.makeText(getApplicationContext(), "NO SAVED IMAGE FOUND!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            requestWriteExternalStoragePermission(REQUEST_CODE_LOAD_IMAGE);
+        }
+    }
+
+    private boolean hasWriteExternalStoragePermission() {
+        return ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestWriteExternalStoragePermission(int requestCode) {
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, requestCode);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            onPermissionGranted(requestCode);
+        }
+    }
+
+    private void onPermissionGranted(int requestCode) {
+        switch (requestCode) {
+            case REQUEST_CODE_LOAD_IMAGE:
+                loadImage();
+                break;
+            case REQUEST_CODE_SAVE_IMAGE:
+                saveImage();
+                break;
+            default:
+                break;
         }
     }
 }

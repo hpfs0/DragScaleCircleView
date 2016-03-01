@@ -29,7 +29,7 @@ public class PaintUtil {
     /**
      * create the paint object for drawing the crop window border.
      */
-    public static Paint newBoarderPaint(@NonNull Resources resources, float size, int color){
+    public static Paint newBoarderPaint(float size, int color){
         final Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(color);
@@ -43,7 +43,7 @@ public class PaintUtil {
      * creates the paint object for drawing the translucent overlay outside the crop window.
      *
      */
-    public static Paint newSurroundingAreaOverlayPaint(@NonNull Resources resources) {
+    public static Paint newSurroundingAreaOverlayPaint() {
 
         final Paint paint = new Paint();
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
@@ -67,7 +67,7 @@ public class PaintUtil {
     /**
      * create the paint object for drawing the crop window corner..
      */
-    public static Paint newGuideLinePaint(@NonNull Resources resources, float size, int color){
+    public static Paint newGuideLinePaint(float size, int color){
         final Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(color);
