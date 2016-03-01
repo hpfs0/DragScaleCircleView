@@ -10,13 +10,13 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -215,10 +215,8 @@ public class MainActivity extends AppCompatActivity {
             File cachePath = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + CAMERA_CROP_IMAGE_PATH);
             FileOutputStream outputStream = null;
             try {
-                if (cachePath.createNewFile()) {
-                    outputStream = new FileOutputStream(cachePath);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                }
+                outputStream = new FileOutputStream(cachePath);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -259,7 +257,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             onPermissionGranted(requestCode);
         }
