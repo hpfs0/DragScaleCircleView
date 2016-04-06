@@ -44,6 +44,10 @@ If you want to guideline don't shown, please define the <code>xmlns:app="http://
 ## Download
 The latest version can be downloaded as a zip and referenced by your application as a library project.
 
+## Thanks
+* [android-crop](https://github.com/jdamcd/android-crop)
+* [GalleryFinal](https://github.com/pengjianbo/GalleryFinal)
+
 ## TODO
 - [ ] add background image selector from file system.
 - [x] make the circle window move and drag on imageview.
